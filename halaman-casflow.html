@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cashflow & Return Investasi Syariah</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Custom styles for theme, modals, and input aesthetics */
+    body { font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
+    /* Default theme */
+    .card { background: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    input[type="text"], input[type="date"], input[type="number"], select, button { transition: all 0.2s ease-in-out; }
+    
+    /* Dark Theme */
+    .dark { background: #1f2937; color: #f9fafb; }
+    .dark .card { background: #374151; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+    /* Note: These TH styles are generally overridden by the specific bg-green-800 applied to the table header below */
+    .dark th { background: #4b5563; color: #f9fafb; } 
+    /* Baris genap/ganjil dihilangkan agar konsisten */
+    .dark input, .dark select { background: #4b5563; border-color: #6b7280; color: #f9fafb; }
+    .dark .modal-content { background: #374151; }
+
+    /* Cobalt Theme */
+    .cobalt { background: #002b36; color: #93a1a1; }
+    .cobalt .card { background: #073642; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); }
+    /* Note: These TH styles are generally overridden by the specific bg-green-800 applied to the table header below */
+    .cobalt th { background: #586e75; color: #fdf6e3; }
+    /* Baris genap/ganjil dihilangkan agar konsisten */
+    .cobalt input, .cobalt select { background: #586e75; border-color: #839496; color: #fdf6e3; }
+    .cobalt .modal-content { background: #073642; color: #93a1a1; }
+
+    /* Modal styles */
+    #kategoriModal, #editModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 50;
+    }
+    .modal-content {
+      width: 90%;
+      max-width: 400px;
+    }
+
+    /* Input styling within form groups */
+    .form-group label {
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 bg-gray-100 min-h-screen">
+  
+  <div class="max-w-7xl mx-auto">
+    <!-- Header and Theme Toggle -->
+    <header class="mb-6 p-4 rounded-xl bg-white shadow-lg flex flex-col md:flex-row justify-between items-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Cashflow & Return Investasi Syariah</h1>
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <div class="flex gap-2">
+          <button class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-500 text-white hover:bg-blue-600" onclick="setTheme('original')">Original</button>
+          <button class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-700 text-white hover:bg-gray-800" onclick="setTheme('dark')">Dark</button>
+          <button class="px-4 py-2 text-sm font-medium rounded-lg bg-yellow-600 text-white hover:bg-yellow-700" onclick="setTheme('cobalt')">Cobalt</button>
+        </div>
+        <button class="w-full sm:w-auto px-4 py-2 text-sm font-medium rounded-lg bg-red-500 text-white hover:bg-red-600" onclick="resetData()">Reset Semua Data</button>
+      </div>
+    </header>
+
+    <!-- Summary Cards -->
+    <div class="summary grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="summary">
+      <!-- Summary items will be injected here -->
+    </div>
+
+    <!-- Input Forms and Chart Section (Main Content) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Input Forms (Column 1 & 2 on Desktop) -->
+      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Tambah Deposit Card -->
+        <div class="card p-5 rounded-xl">
+          <h2 class="text-xl font-semibold mb-4 text-gray-700">Tambah Deposit</h2>
+          <div class="form-group">
+            <label for="namaInvest">Nama Investasi:</label>
+            <input type="text" id="namaInvest" placeholder="Contoh: Reksadana A" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div class="form-group">
+            <label for="tanggalMasuk">Tanggal Masuk:</label>
+            <input type="date" id="tanggalMasuk" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div class="form-group flex justify-between items-end gap-2">
+            <div class="flex-grow">
+                <label for="kategori">Kategori:</label>
+                <input type="text" id="kategori" readonly class="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg" />
+            </div>
+            <button onclick="openKategoriModal()" class="flex-shrink-0 w-1/3 py-2 px-4 text-sm font-medium rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 mt-2">Pilih</button>
+          </div>
+          <div class="form-group">
+            <label for="arah">Arah:</label>
+            <select id="arah" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+              <option>Masuk</option>
+              <option>Keluar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="nominal">Nominal (IDR):</label>
+            <input type="number" id="nominal" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <button onclick="addDeposit()" class="w-full mt-4 py-2 px-4 font-semibold rounded-lg bg-green-500 text-white hover:bg-green-600">Tambah Transaksi</button>
+        </div>
+
+        <!-- Input Return Card -->
+        <div class="card p-5 rounded-xl">
+          <h2 class="text-xl font-semibold mb-4 text-gray-700">Input Return</h2>
+          <div class="form-group">
+            <label for="namaReturn">Nama Investasi:</label>
+            <input type="text" id="namaReturn" placeholder="Contoh: Reksadana A" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div class="form-group">
+            <label for="tanggalReturn">Tanggal Return:</label>
+            <input type="date" id="tanggalReturn" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <div class="form-group">
+            <label for="returnValue">Return (positif/negatif - IDR):</label>
+            <input type="number" id="returnValue" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+          <button onclick="addReturn()" class="w-full mt-4 py-2 px-4 font-semibold rounded-lg bg-orange-500 text-white hover:bg-orange-600">Simpan Return</button>
+          
+          <div class="mt-8 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500 text-sm text-yellow-800">
+            <p class="font-semibold">Catatan:</p>
+            <p>Input return untuk mencatat laba atau rugi dari investasi yang sudah ada.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Card (Column 3 on Desktop) -->
+      <div class="card p-5 rounded-xl lg:col-span-1">
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">Perkembangan Saldo (Semua Transaksi)</h2>
+        <!-- Wrapper untuk mengontrol tinggi chart secara eksplisit agar tidak tertarik ke bawah -->
+        <div class="relative h-80"> 
+            <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction History (Table) Section -->
+    <div class="card p-5 rounded-xl overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Riwayat Transaksi</h2>
+      
+      <div class="mb-4 w-full md:w-1/3">
+        <label for="filterKategori" class="block text-sm font-medium text-gray-700">Filter Kategori:</label>
+        <select id="filterKategori" onchange="renderTable()" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+          <option value="">Semua</option>
+          <option>Reksadana</option>
+          <option>Obligasi</option>
+          <option>Saham</option>
+          <option>Balanced</option>
+          <option>Emas</option>
+        </select>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table id="tabel" class="min-w-full divide-y divide-gray-200">
+          <!-- Header (tetap hijau tua dan teks putih) -->
+          <thead class="bg-green-800">
+            <tr>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-left">Tanggal</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-left">Nama</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-center">Kategori</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-center">Arah</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-right">Nominal (IDR)</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-right">Return (IDR)</th>
+              <th scope="col" class="px-4 py-3 text-xs font-medium text-white uppercase tracking-wider text-center">Aksi</th>
+            </tr>
+          </thead>
+          <!-- Menghapus class bg-white dari tbody, divider diatur di JS pada TR -->
+          <tbody class="divide-y divide-green-700">
+            <!-- Data rows will be injected here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kategori Modal -->
+  <div id="kategoriModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-content bg-white p-6 rounded-xl shadow-2xl">
+      <h3 class="text-2xl font-bold mb-4">Pilih Kategori</h3>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-lg font-semibold mb-1">Reksadana</label>
+          <select onchange="selectKategori(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- pilih --</option>
+            <option>Bahana Liquid Syariah Kelas G</option>
+            <option>Sucorinvest Money Market Fund</option>
+            <option>BRI Serunoi Pasar Syariah</option>
+            <option>Trimegah Kas Syariah</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-lg font-semibold mb-1">Obligasi</label>
+          <select onchange="selectKategori(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- pilih --</option>
+            <option>Majoris Sukuk Negara Indonesia</option>
+            <option>Bahana MES Syariah Fund Kelas G</option>
+            <option>BNP Paribas Sukuk Negara Kelas SK1</option>
+            <option>EastPricing Syariah Fixed Income Amanah Kelas A</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-lg font-semibold mb-1">Saham</label>
+          <select onchange="selectKategori(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- pilih --</option>
+            <option>BRI Index Syariah</option>
+            <option>BNP Paribas Pesona Syariah</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-lg font-semibold mb-1">Balanced</label>
+          <select onchange="selectKategori(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- pilih --</option>
+            <option>Schroder Syariah Balance Fund</option>
+            <option>Sucorinvest Syariah balanced Fund</option>
+            <option>Mandiri Investa Syariah Berimbang</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-lg font-semibold mb-1">Emas</label>
+          <select onchange="selectKategori(this.value)" class="w-full p-2 border border-gray-300 rounded-lg">
+            <option value="">-- pilih --</option>
+            <option>ShopeeEmas</option>
+            <option>Treasury</option>
+          </select>
+        </div>
+      </div>
+      
+      <button onclick="closeKategoriModal()" class="w-full mt-6 py-2 px-4 font-semibold rounded-lg bg-gray-500 text-white hover:bg-gray-600">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-content bg-white p-6 rounded-xl shadow-2xl">
+      <h3 class="text-2xl font-bold mb-4">Edit Data Transaksi</h3>
+      <input type="hidden" id="editIndex" />
+      
+      <div class="form-group">
+        <label for="editNama">Nama Investasi:</label>
+        <input type="text" id="editNama" class="w-full p-2 border border-gray-300 rounded-lg" />
+      </div>
+      <div class="form-group">
+        <label for="editKategori">Kategori:</label>
+        <input type="text" id="editKategori" class="w-full p-2 border border-gray-300 rounded-lg" />
+      </div>
+      <div class="form-group">
+        <label for="editArah">Arah:</label>
+        <select id="editArah" class="w-full p-2 border border-gray-300 rounded-lg">
+          <option>Masuk</option>
+          <option>Keluar</option>
+          <option>Return</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editNominal">Nominal (Deposit/Withdrawal):</label>
+        <input type="number" id="editNominal" class="w-full p-2 border border-gray-300 rounded-lg" />
+      </div>
+      <div class="form-group">
+        <label for="editReturn">Return (Profit/Loss):</label>
+        <input type="number" id="editReturn" class="w-full p-2 border border-gray-300 rounded-lg" />
+      </div>
+      
+      <div class="flex gap-4 mt-6">
+        <button onclick="saveEdit()" class="flex-1 py-2 px-4 font-semibold rounded-lg bg-blue-500 text-white hover:bg-blue-600">Simpan Perubahan</button>
+        <button onclick="closeEditModal()" class="flex-1 py-2 px-4 font-semibold rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System logic remains unchanged, only aesthetic adjustments for layout
+    let data = JSON.parse(localStorage.getItem('investData')||'[]');
+    const ctx = document.getElementById('chart').getContext('2d');
+    let chart;
+
+    function saveData(){ localStorage.setItem('investData', JSON.stringify(data)); render(); }
+
+    function addDeposit(){
+      const nama=document.getElementById('namaInvest').value.trim();
+      const kategori=document.getElementById('kategori').value;
+      const arah=document.getElementById('arah').value;
+      const nominal=parseFloat(document.getElementById('nominal').value);
+      const tanggal=document.getElementById('tanggalMasuk').value||new Date().toLocaleDateString('en-CA'); // Use en-CA for YYYY-MM-DD format if no date is entered
+      if(!nama||!kategori||isNaN(nominal)||nominal<=0)return showCustomAlert('Error', 'Lengkapi data dengan benar (Nama, Kategori, Nominal > 0)');
+      data.push({tanggal,nama,kategori,arah,nominal,return:0});
+      data.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal)); // Sort after adding
+      saveData();
+      document.getElementById('namaInvest').value = '';
+      document.getElementById('tanggalMasuk').value = '';
+      document.getElementById('kategori').value = '';
+      document.getElementById('nominal').value = '';
+    }
+
+    function addReturn(){
+      const nama=document.getElementById('namaReturn').value.trim();
+      const ret=parseFloat(document.getElementById('returnValue').value);
+      const tanggal=document.getElementById('tanggalReturn').value||new Date().toLocaleDateString('en-CA');
+      if(!nama||isNaN(ret))return showCustomAlert('Error', 'Lengkapi data dengan benar (Nama dan Return)');
+      // Find the existing category for the investment name for better context in table/summary
+      const existingEntry = data.find(d => d.nama === nama && d.kategori !== 'Return');
+      const category = existingEntry ? existingEntry.kategori : 'General';
+
+      data.push({tanggal,nama,kategori: category + ' Return',arah:'Return',nominal:0,return:ret});
+      data.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+      saveData();
+      document.getElementById('namaReturn').value = '';
+      document.getElementById('tanggalReturn').value = '';
+      document.getElementById('returnValue').value = '';
+    }
+
+    function editData(index){
+      const item=data[index];
+      document.getElementById('editIndex').value=index;
+      document.getElementById('editNama').value=item.nama;
+      document.getElementById('editKategori').value=item.kategori;
+      document.getElementById('editArah').value=item.arah;
+      document.getElementById('editNominal').value=item.nominal;
+      document.getElementById('editReturn').value=item.return;
+      document.getElementById('editModal').style.display='flex';
+    }
+
+    function saveEdit(){
+      const i=parseInt(document.getElementById('editIndex').value);
+      data[i].nama=document.getElementById('editNama').value;
+      data[i].kategori=document.getElementById('editKategori').value;
+      data[i].arah=document.getElementById('editArah').value;
+      data[i].nominal=parseFloat(document.getElementById('editNominal').value)||0;
+      data[i].return=parseFloat(document.getElementById('editReturn').value)||0;
+      data.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+      closeEditModal(); saveData();
+    }
+
+    function deleteData(index){
+      // Use custom modal or message box instead of confirm()
+      showCustomModal('Konfirmasi', 'Apakah kamu yakin ingin menghapus entri ini?', () => {
+        data.splice(index,1);
+        saveData();
+      });
+    }
+
+    function resetData(){
+      showCustomModal('Konfirmasi Reset', 'Apakah kamu yakin ingin menghapus SEMUA data?', () => {
+        localStorage.removeItem('investData');
+        data=[];
+        render();
+        showCustomAlert('Berhasil', 'Semua data berhasil direset.');
+      });
+    }
+
+    function closeEditModal(){ document.getElementById('editModal').style.display='none'; }
+    
+    // Custom Alert/Confirm replacement (since alert/confirm are forbidden)
+    function showCustomAlert(title, message) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        modal.innerHTML = `
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+                <h4 class="text-xl font-bold mb-4">${title}</h4>
+                <p class="mb-6">${message}</p>
+                <button class="w-full py-2 px-4 font-semibold rounded-lg bg-blue-500 text-white hover:bg-blue-600" onclick="document.body.removeChild(this.closest('.fixed'))">OK</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    function showCustomModal(title, message, onConfirm) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        modal.innerHTML = `
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+                <h4 class="text-xl font-bold mb-4">${title}</h4>
+                <p class="mb-6">${message}</p>
+                <div class="flex gap-4">
+                    <button id="confirm-btn" class="flex-1 py-2 px-4 font-semibold rounded-lg bg-red-500 text-white hover:bg-red-600">Ya, Hapus</button>
+                    <button id="cancel-btn" class="flex-1 py-2 px-4 font-semibold rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400">Batal</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#confirm-btn').onclick = () => {
+            onConfirm();
+            document.body.removeChild(modal);
+        };
+        modal.querySelector('#cancel-btn').onclick = () => {
+            document.body.removeChild(modal);
+        };
+    }
+    // End Custom Alert/Confirm replacement
+
+    function render(){ renderTable(); renderChart(); renderSummary(); }
+
+    function renderTable(){
+      const filter=document.getElementById('filterKategori').value;
+      const tbody=document.querySelector('#tabel tbody');
+      // Terapkan divider hijau gelap yang konsisten untuk memisahkan baris
+      tbody.className = 'divide-y divide-green-700'; 
+      
+      tbody.innerHTML='';
+      
+      const filteredData = data.filter(d => 
+        !filter || d.kategori.includes(filter) || d.kategori.includes('Return')
+      );
+
+      filteredData.forEach((d,i)=>{
+        const tr=document.createElement('tr');
+        // Terapkan latar belakang hijau tua konstan, dan tidak ada hover
+        tr.className = 'bg-green-800'; 
+
+        let nominalDisplay = d.arah === 'Return' ? '-' : d.nominal.toLocaleString('id-ID');
+        let returnDisplay = d.return === 0 && d.arah !== 'Return' ? '-' : d.return.toLocaleString('id-ID');
+        
+        // Gunakan warna teks yang lebih terang (400-level) agar terlihat di latar belakang hijau tua
+        let rowClass = d.arah === 'Masuk' ? 'text-green-400 font-medium' : 
+                       d.arah === 'Keluar' ? 'text-red-400 font-medium' : 
+                       'text-blue-400 font-medium';
+
+        // Terapkan text-white ke semua kolom non-warna
+        tr.innerHTML=`
+          <td class="px-4 py-3 whitespace-nowrap text-sm text-white text-left">${d.tanggal}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-white text-left">${d.nama}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-300 text-center">${d.kategori}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm ${rowClass} text-center">${d.arah}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm text-white text-right">${nominalDisplay}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm text-white text-right">${returnDisplay}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-center">
+            <button class="text-indigo-400 hover:text-indigo-300 mr-2" onclick='editData(${data.indexOf(d)})'>Edit</button> 
+            <button class="text-red-400 hover:text-red-300" onclick='deleteData(${data.indexOf(d)})'>Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderChart(){
+      // Combine deposit/withdrawal and return for a single time series
+      const sortedData = [...data].sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+      const labels = sortedData.map(d => d.tanggal);
+      const saldo = []; 
+      let total = 0;
+      
+      sortedData.forEach(d => { 
+        total += (d.arah === 'Masuk' ? d.nominal : -d.nominal) + d.return; 
+        saldo.push(total); 
+      });
+
+      if(chart)chart.destroy();
+      chart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels,
+          datasets:[{
+            label:'Perkembangan Saldo (IDR)',
+            data:saldo,
+            borderWidth:2,
+            fill:false,
+            borderColor:'#10b981', // Emerald green
+            tension: 0.3
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio: false,
+          scales:{
+            y:{
+              beginAtZero:true,
+              ticks: {
+                  callback: function(value) {
+                      return 'IDR ' + value.toLocaleString('id-ID');
+                  }
+              }
+            },
+            x: {
+                // Ensure labels are readable
+            }
+          }
+        }
+      });
+    }
+
+    function renderSummary(){
+      const summaryDiv=document.getElementById('summary');
+      summaryDiv.innerHTML='';
+      
+      // Get all unique investment names for summary grouping
+      const investmentNames = new Set(data.map(d => d.nama).filter(n => n.trim() !== ''));
+      
+      if (investmentNames.size === 0) {
+        summaryDiv.innerHTML = '<div class="lg:col-span-4 p-4 text-center text-gray-500">Belum ada data investasi. Tambahkan deposit pertama Anda!</div>';
+        return;
+      }
+      
+      investmentNames.forEach(name => {
+        const items = data.filter(d => d.nama === name);
+        const totalDeposit = items.filter(d => d.arah === 'Masuk').reduce((a,b)=>a+b.nominal,0);
+        const totalWithdrawal = items.filter(d => d.arah === 'Keluar').reduce((a,b)=>a+b.nominal,0);
+        const totalReturn = items.reduce((a,b)=>a+b.return,0);
+        
+        const totalInvested = totalDeposit - totalWithdrawal;
+        const currentSaldo = totalInvested + totalReturn;
+        const roi = totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 
+                    totalInvested === 0 && totalReturn !== 0 ? Infinity : 0; // Handle ROI when invested is 0
+
+        const category = items.find(d => !d.kategori.includes('Return'))?.kategori || 'N/A';
+        const roiColor = roi >= 0 ? 'text-green-500' : 'text-red-500';
+        
+        const div=document.createElement('div');
+        div.className='summary-item card p-4 rounded-xl';
+        
+        div.innerHTML=`
+          <h4 class="text-lg font-bold mb-1 truncate">${name}</h4>
+          <p class="text-sm text-gray-500 dark:text-gray-400">${category}</p>
+          <div class="mt-2 space-y-1">
+            <p class="text-base"><span class="font-medium">Modal Bersih:</span> IDR ${totalInvested.toLocaleString('id-ID')}</p>
+            <p class="text-base font-semibold"><span class="font-medium">Saldo Saat Ini:</span> IDR ${currentSaldo.toLocaleString('id-ID')}</p>
+            <p class="text-base ${roiColor}">
+                <span class="font-medium">Return:</span> IDR ${totalReturn.toLocaleString('id-ID')} (${isFinite(roi) ? roi.toFixed(2) : 'N/A'}%)
+            </p>
+          </div>
+        `;
+        summaryDiv.appendChild(div);
+      });
+    }
+
+    function setTheme(mode){
+      document.body.className = 'p-4 md:p-8 min-h-screen';
+      if(mode==='dark')document.body.classList.add('dark', 'bg-gray-800');
+      else if(mode==='cobalt')document.body.classList.add('cobalt');
+      else document.body.classList.add('bg-gray-100');
+      // Render ulang tabel untuk memastikan gaya baris kustom tetap berlaku di tema lain
+      renderTable(); 
+    }
+
+    function openKategoriModal(){ document.getElementById('kategoriModal').style.display='flex'; }
+    function closeKategoriModal(){ document.getElementById('kategoriModal').style.display='none'; }
+    function selectKategori(val){ 
+      if(val){ 
+        document.getElementById('kategori').value = val; 
+        closeKategoriModal(); 
+        // Also set the Nama Investasi based on the specific selection for convenience
+        // This is a small system addition for UX, not layout related, but helpful.
+        if (!document.getElementById('namaInvest').value) {
+            document.getElementById('namaInvest').value = val;
+        }
+      } 
+    }
+
+    render();
+    setTheme('original'); // Apply default theme classes on load
+  </script>
+</body>
+</html>
