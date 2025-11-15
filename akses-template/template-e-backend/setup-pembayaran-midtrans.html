@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toko Online 2-Modal Slide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Tombol Keranjang -->
+  <button id="cartButton" class="fixed bottom-5 right-5 bg-blue-600 text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 z-50">
+    🛒 <span id="cartCount">0</span>
+  </button>
+
+  <!-- Modal -->
+  <div id="cartModal" class="fixed inset-0 hidden bg-black/50 flex justify-center items-center z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative overflow-hidden">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">×</button>
+      
+      <!-- SLIDE CONTAINER -->
+      <div id="modalSlides" class="flex transition-transform duration-300 w-[200%]">
+        
+        <!-- ====== SLIDE 1: PRODUK DI KERANJANG ====== -->
+        <div class="w-1/2 p-4">
+          <h2 class="text-2xl font-bold mb-4 text-center">Keranjang Anda</h2>
+
+          <ul id="cartItems" class="space-y-2 max-h-56 overflow-y-auto border rounded-lg p-3 mb-4"></ul>
+
+          <div class="flex justify-between items-center border-t border-b py-3 mb-4">
+            <span class="font-semibold text-lg">Total:</span>
+            <span id="cartTotal" class="font-bold text-lg text-blue-600">Rp 0</span>
+          </div>
+
+          <button id="nextToForm" class="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 font-bold text-lg">
+            Lanjut ke Formulir →
+          </button>
+        </div>
+
+        <!-- ====== SLIDE 2: FORM PEMESANAN ====== -->
+        <div class="w-1/2 p-4">
+          <h2 class="text-2xl font-bold mb-4 text-center">Formulir Pemesanan</h2>
+
+          <div class="space-y-3">
+            <input id="nama" type="text" placeholder="Nama Penerima" class="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"/>
+
+            <textarea id="alamat" placeholder="rt/rw, jl./desa, Kec., kab., prov. .." class="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+
+            <select id="ekspedisi" class="w-full border px-3 py-2 rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+              <option value="" disabled selected>Pilih Ekspedisi</option>
+              <option value="JNE Reguler">JNE Reguler</option>
+              <option value="TIKI Reguler">TIKI Reguler</option>
+              <option value="JNT">JNT</option>
+              <option value="SiCepat Reg">SiCepat Reg</option>
+              <option value="Ninja">Ninja</option>
+              <option value="Wahana">Wahana</option>
+            </select>
+
+            <input id="whatsapp" type="tel" placeholder="no. WhatsApp" class="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"/>
+            <input id="email" type="email" placeholder="E-mail" class="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500"/>
+          </div>
+
+          <div class="flex justify-between gap-3 mt-5">
+            <button id="backToCart" class="w-1/2 bg-gray-300 text-gray-800 py-2.5 rounded-lg hover:bg-gray-400 font-bold text-lg">
+              ← Kembali
+            </button>
+            <button id="checkoutBtn" class="w-1/2 bg-green-600 text-white py-2.5 rounded-lg hover:bg-green-700 font-bold text-lg">
+              Checkout
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-SIEdQwl7gXaCQu76"></script>
+
+  <script>
+    // === DATA PRODUK (contoh)
+    const produkElementor = {
+  "cartbutton-001": { id: "p1", name: "Madu Gif 280Gr", price: 140000 },
+  "cartbutton-002": { id: "p2", name: "Madu Savir 280Gr", price: 140000 },
+  "cartbutton-003": { id: "p3", name: "Madu Greenfood 280Gr", price: 140000 },
+  "cartbutton-004": { id: "p4", name: "Madu GIftmag 280Gr", price: 140000 },
+  "cartbutton-005": { id: "p5", name: "Madu Hitam Pahit 280Gr", price: 140000 },
+  "cartbutton-006": { id: "p6", name: "Madu Bajakah 280Gr", price: 140000 },
+  "cartbutton-007": { id: "p7", name: "Madu Bumils", price: 140000 },
+  "cartbutton-008": { id: "p8", name: "Madu Gif Uragin 180Gr", price: 140000 },
+  "cartbutton-009": { id: "p9", name: "Madu Sauda 280Gr", price: 140000 },
+  "cartbutton-010": { id: "p10", name: "Madu Gif Brain 180Gr", price: 140000 },
+  "cartbutton-011": { id: "p11", name: "Madu Anak Sehat 180Gr", price: 140000 },
+  "cartbutton-012": { id: "p12", name: "Madu Multiflora Grecia 450Gr", price: 140000 },
+  "cartbutton-013": { id: "p13", name: "Gifvit 50", price: 140000 },
+  "cartbutton-014": { id: "p14", name: "Gifvit 100", price: 140000 },
+  "cartbutton-015": { id: "p15", name: "Gamat 50", price: 140000 },
+  "cartbutton-016": { id: "p16", name: "Pacevit 10ml", price: 140000 },
+  "cartbutton-017": { id: "p17", name: "Propolis 10ml", price: 140000 },
+  "cartbutton-018": { id: "p18", name: "Cuka Apel 350gr", price: 140000 },
+  "cartbutton-019": { id: "p19", name: "Cuka Nanas 350Gr", price: 140000 },
+  "cartbutton-020": { id: "p20", name: "Cuka Lemon 350Gr", price: 140000 },
+  "cartbutton-021": { id: "p21", name: "Sari Kurma Grecia 280Gr", price: 140000 },
+  "cartbutton-022": { id: "p22", name: "Sari Kurma Ajwa 250Gr", price: 140000 },
+  "cartbutton-023": { id: "p23", name: "Sari Kurma Super 350Gr", price: 140000 },
+  "cartbutton-024": { id: "p24", name: "Green Sauda 10ml", price: 140000 },
+  "cartbutton-025": { id: "p25", name: "ZaitunQu 225", price: 140000 },
+  "cartbutton-026": { id: "p26", name: "ZaitunQu 500", price: 140000 },
+  "cartbutton-027": { id: "p27", name: "Green VCO 100", price: 140000 },
+  "cartbutton-028": { id: "p28", name: "Spiruvit 50 Kapsul", price: 140000 },
+  "cartbutton-029": { id: "p29", name: "Susu Gomee 200Gr", price: 140000 },
+  "cartbutton-030": { id: "p30", name: "Gif Water 1 liter", price: 140000 }
+};
+
+    let cart = [];
+
+    // === Tambahkan ke keranjang dari tombol Elementor ===
+    Object.keys(produkElementor).forEach(btnId => {
+      const btn = document.getElementById(btnId);
+      if(btn){
+        btn.addEventListener("click", () => {
+          const p = produkElementor[btnId];
+          const existing = cart.find(item => item.name === p.name);
+          if (existing) existing.qty++;
+          else cart.push({name: p.name, price: p.price, qty: 1});
+          updateCartUI();
+        });
+      }
+    });
+
+    // === Update UI Cart ===
+    function updateCartUI(){
+      document.getElementById("cartCount").textContent = cart.reduce((a,b)=>a+b.qty,0);
+      const cartItems = document.getElementById("cartItems");
+      cartItems.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = `<li class="text-center text-gray-500">Keranjang masih kosong...</li>`;
+      } else {
+        cart.forEach((item, i) => {
+          total += item.price * item.qty;
+          cartItems.innerHTML += `
+            <li class="flex justify-between items-center text-sm">
+              <span>${item.name}</span>
+              <div class="flex items-center gap-2">
+                <button onclick="changeQty(${i}, -1)" class="bg-gray-200 px-2 rounded">-</button>
+                <span>${item.qty}</span>
+                <button onclick="changeQty(${i}, 1)" class="bg-gray-200 px-2 rounded">+</button>
+                <span class="font-semibold">Rp ${(item.price * item.qty).toLocaleString()}</span>
+                <button onclick="removeItem(${i})" class="text-red-500 font-bold">×</button>
+              </div>
+            </li>`;
+        });
+      }
+      document.getElementById("cartTotal").textContent = "Rp " + total.toLocaleString();
+    }
+
+    function changeQty(index, delta){
+      cart[index].qty += delta;
+      if(cart[index].qty <= 0) cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function removeItem(i){ cart.splice(i,1); updateCartUI(); }
+
+    updateCartUI();
+
+    // === Modal handling ===
+    const modal = document.getElementById("cartModal");
+    const slides = document.getElementById("modalSlides");
+
+    document.getElementById("cartButton").addEventListener("click",()=>modal.classList.remove("hidden"));
+    document.getElementById("closeModal").addEventListener("click",()=>modal.classList.add("hidden"));
+    modal.addEventListener("click",e=>{if(e.target===modal) modal.classList.add("hidden");});
+
+    document.getElementById("nextToForm").addEventListener("click",()=>{
+      if(cart.length===0){alert("Keranjang kosong!");return;}
+      slides.style.transform = "translateX(-50%)";
+    });
+    document.getElementById("backToCart").addEventListener("click",()=>{
+      slides.style.transform = "translateX(0)";
+    });
+
+    // === Checkout Midtrans ===
+    document.getElementById("checkoutBtn").addEventListener("click",()=>{
+      if(cart.length===0){alert("Keranjang kosong!");return;}
+
+      const total = cart.reduce((sum,i)=>sum+i.price*i.qty,0);
+      const name = document.getElementById("nama").value.trim();
+      const address = document.getElementById("alamat").value.trim();
+      const expedition = document.getElementById("ekspedisi").value;
+      const phone = document.getElementById("whatsapp").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if(!name || !address || !expedition || !phone || !email){
+        alert("Mohon lengkapi semua data formulir!");
+        return;
+      }
+
+      const orderData = {
+        order_id: "ORDER-" + Date.now(),
+        gross_amount: total,
+        name, address, expedition, phone, email
+      };
+
+      fetch("Midtrans.php", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(orderData)
+      })
+      .then(res=>res.json())
+      .then(data=>{
+        snap.pay(data.token, {
+          onSuccess: r=>console.log("SUCCESS",r),
+          onPending: r=>console.log("PENDING",r),
+          onError: r=>console.log("ERROR",r)
+        });
+      });
+    });
+  </script>
+</body>
+</html>

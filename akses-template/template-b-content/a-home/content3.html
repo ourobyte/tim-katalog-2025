@@ -1,0 +1,154 @@
+<!-- ========================================================== -->
+<!-- 🧩 CONTENT TEMPLATE #1 — LANDING SHOP BASIC (SPA VERSION) -->
+<!-- ========================================================== -->
+
+<!-- 
+[ENG 🇬🇧]
+1. PURPOSE: This section is your main content for a single-page store interface. 
+   It includes navigation (Home, Shop, About) and dynamically loaded sections.
+2. FUNCTION: The script below works using "hash routing" (#home, #shop, #about). 
+   Clicking navigation links replaces content instantly without page reload.
+3. EDITING GUIDE: 
+   - You can freely change text, images, or colors inside the 'routes' object.
+   - Keep quotation marks and backticks (`) intact! Removing one can break your SPA.
+   - Always make a backup before editing any JavaScript or HTML content.
+4. DUPLICATING:
+   - To add a new page, copy one route block and rename it (e.g., contact, gallery).
+   - Add a link in your header with <a href="#contact">Contact</a>.
+5. STYLE:
+   - All visuals are powered by TailwindCSS utility classes.
+   - You can adjust spacing, typography, or grid columns easily.
+6. POSITION:
+   - Place this block after your header and before the footer.
+7. WARNING:
+   - Do not delete or move the <script> part unless you understand JavaScript.
+8. LICENSE:
+   - Educational / commercial template package by Mister Fo.
+   - Version: Content v1.0.0
+
+[POR 🇧🇷]
+1. PROPÓSITO: Esta seção é o conteúdo principal para uma loja em página única.
+   Inclui navegação (Home, Shop, About) e seções carregadas dinamicamente.
+2. FUNÇÃO: O script abaixo usa “hash routing” (#home, #shop, #about). 
+   Clicar nos links muda o conteúdo instantaneamente sem recarregar a página.
+3. GUIA DE EDIÇÃO:
+   - Você pode alterar livremente texto, imagens e cores dentro do objeto 'routes'.
+   - Mantenha as aspas e crases (`) intactas! Remover uma pode quebrar seu SPA.
+   - Sempre faça backup antes de editar JavaScript ou HTML.
+4. DUPLICAÇÃO:
+   - Para adicionar uma nova página, copie um bloco de rota e renomeie-o (ex: contato, galeria).
+   - Adicione um link no cabeçalho com <a href="#contact">Contato</a>.
+5. ESTILO:
+   - Todo o visual usa classes utilitárias do TailwindCSS.
+   - Ajuste facilmente espaçamento, tipografia ou colunas de grade.
+6. POSIÇÃO:
+   - Coloque este bloco após o cabeçalho e antes do rodapé.
+7. AVISO:
+   - Não exclua nem mova o <script> se não entender JavaScript.
+8. LICENÇA:
+   - Pacote de modelo educacional/comercial por Mister Fo.
+   - Versão: Content v1.0.0
+
+[CHN 🇨🇳]
+1. 目的：此部分是单页商店的主要内容，包括导航（主页、商店、关于）。
+2. 功能：下方脚本使用 “哈希路由” (#home, #shop, #about)，点击导航后内容会即时切换，无需重新加载页面。
+3. 编辑指南：
+   - 可自由修改 'routes' 对象内的文字、图片和颜色。
+   - 请勿删除引号或反引号 (`)，否则SPA会出错。
+   - 编辑前请务必备份。
+4. 复制：
+   - 想新增页面时，复制一个路由块并重命名（如 contact、gallery）。
+   - 在页眉中添加 <a href="#contact">联系</a>。
+5. 样式：
+   - 所有样式基于 TailwindCSS 实用类。
+   - 可轻松调整间距、字体或网格列。
+6. 位置：
+   - 将此模块放在页眉之后、页脚之前。
+7. 警告：
+   - 除非你熟悉 JavaScript，否则不要删除或移动 <script>。
+8. 许可证：
+   - Mister Fo 出品教育/商业模板。
+   - 版本：Content v1.0.0
+
+[IND 🇮🇩]
+1. TUJUAN: Bagian ini adalah konten utama toko versi SPA (Single Page Application).
+   Sudah termasuk navigasi (Home, Shop, About) dan pemuatan halaman otomatis.
+2. FUNGSI: Script di bawah bekerja dengan “hash routing” (#home, #shop, #about).
+   Saat link diklik, konten berganti tanpa reload halaman.
+3. PANDUAN EDIT:
+   - Bebas ubah teks, gambar, dan warna di dalam objek 'routes'.
+   - Jangan hapus tanda petik atau backtick (`), bisa bikin SPA error.
+   - Selalu buat backup sebelum mengedit.
+4. DUPLIKASI:
+   - Untuk nambah halaman baru, salin satu blok route dan ubah namanya (misal: contact, gallery).
+   - Tambah link di header dengan <a href="#contact">Kontak</a>.
+5. GAYA:
+   - Semua style pakai TailwindCSS, tinggal ubah class sesuai kebutuhan.
+6. PENEMPATAN:
+   - Letakkan blok ini setelah header dan sebelum footer.
+7. PERINGATAN:
+   - Jangan hapus bagian <script> kalau belum paham JavaScript.
+8. LISENSI:
+   - Template edukasi/komersial oleh Mister Fo.
+   - Versi: Content v1.0.0
+-->
+
+<!-- =================== CLEAN CODE START =================== -->
+<section>
+  <div class="min-h-screen bg-gray-900 text-gray-100 font-sans px-6 py-20">
+
+    <!-- Hero -->
+    <div class="max-w-5xl mx-auto text-center mb-20">
+      <h1 class="text-6xl font-extrabold mb-6 leading-tight">
+        Belanja di Era <span class="text-cyan-400">Cyber Lifestyle</span>
+      </h1>
+      <p class="text-gray-300 text-lg mb-8">
+        Produk futuristik, gadget canggih, dan aksesoris modern yang memadukan teknologi dan gaya.
+      </p>
+
+      <div class="flex justify-center gap-4">
+        <a href="#shop" class="px-8 py-3 bg-cyan-500 text-gray-900 rounded-full font-semibold hover:bg-cyan-400 transition">
+          Mulai Jelajah
+        </a>
+        <a href="#features" class="px-8 py-3 border border-cyan-400 text-cyan-400 rounded-full font-semibold hover:bg-gray-800 transition">
+          Fitur Unggulan
+        </a>
+      </div>
+    </div>
+
+    <!-- Neon Feature Cards -->
+    <div id="features" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-24">
+      
+      <div class="bg-gray-800 p-6 rounded-xl border border-cyan-600 shadow-[0_0_25px_rgba(34,211,238,0.3)]">
+        <h3 class="text-xl font-semibold mb-2 text-cyan-300">Teknologi Terkini</h3>
+        <p class="text-gray-400 text-sm">Produk paling mutakhir untuk kebutuhan modern.</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl border border-fuchsia-600 shadow-[0_0_25px_rgba(217,70,239,0.3)]">
+        <h3 class="text-xl font-semibold mb-2 text-fuchsia-300">Desain Futuristik</h3>
+        <p class="text-gray-400 text-sm">Setiap barang terlihat bagaikan dari masa depan.</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl border border-blue-600 shadow-[0_0_25px_rgba(59,130,246,0.3)]">
+        <h3 class="text-xl font-semibold mb-2 text-blue-300">Durabilitas Tinggi</h3>
+        <p class="text-gray-400 text-sm">Material premium yang tahan lama.</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl border border-purple-600 shadow-[0_0_25px_rgba(147,51,234,0.3)]">
+        <h3 class="text-xl font-semibold mb-2 text-purple-300">Garansi Cyber</h3>
+        <p class="text-gray-400 text-sm">Layanan dukungan super responsif 24/7.</p>
+      </div>
+
+    </div>
+
+    <!-- Banner -->
+    <div class="max-w-5xl mx-auto bg-gradient-to-r from-cyan-500 to-fuchsia-500 py-14 px-10 rounded-3xl text-center shadow-xl">
+      <h2 class="text-4xl font-bold mb-4 text-gray-900">Cyber Week Sale 70% OFF</h2>
+      <p class="text-gray-800 mb-6 font-medium">Promo gila untuk gadget dan aksesoris teknologi.</p>
+      <a href="#deals" class="bg-gray-900 text-cyan-300 px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+        Cek Penawaran
+      </a>
+    </div>
+
+  </div>
+</section>

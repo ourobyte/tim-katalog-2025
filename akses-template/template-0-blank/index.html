@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPA Base Layout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
+
+  <!-- SLOT HEADER -->
+  <header id="app-header" class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
+      <h1 class="text-2xl font-bold">PageCraft Store</h1>
+      <nav class="space-x-6">
+        <a data-page="page1" class="hover:text-gray-500">Home</a>
+        <a href="#" class="hover:text-gray-500">Collection</a>
+        <a href="#" class="hover:text-gray-500">About</a>
+        <a href="#" class="hover:text-gray-500">Contact</a>
+      </nav>
+      <button class="bg-black text-white px-4 py-2 rounded-full">Shop Now</button>
+    </div>
+  </header>
+
+  <!-- SLOT CONTENT -->
+    <main id="app-content" class="flex-1 max-w-6xl mx-auto w-full p-6">
+    <!-- Konten SPA akan masuk dari JS -->
+  </main>
+
+  <script src="index.js"></script>
+
+  <!-- SLOT FOOTER -->
+  <footer id="app-footer" class="w-full">
+    <!-- template footer masuk sini -->
+  </footer>
+
+</body>
+</html>
