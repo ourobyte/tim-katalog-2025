@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Loader */
+    #loader {
+      text-align: center;
+      font-size: 18px;
+      color: #555;
+      margin-top: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+    .item {
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: 0.2s;
+    }
+    .item:hover {
+      transform: scale(1.05);
+    }
+    .item img {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .name {
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .date {
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Update Gallery</h1>
+<div id="loader">Memuat gambar...</div>
+<div id="gallery" class="grid" style="display:none;"></div>
+
+<script>
+  // Fungsi untuk convert link Google Drive jadi direct view
+  function convertToView(url) {
+    let m = url.match(/id=([^&]+)/);
+    if (!m) m = url.match(/\/d\/([^\/]+)/);
+    return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
+  }
+
+  const API_URL = "https://script.google.com/macros/s/AKfycbz66WumGjNhuSsHMcy7T4VkiAKy9J4ss3_NHgV0iMvfzQao-rq3GrjJnzQJJtCvqD0u/exec";
+
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+      const gallery = document.getElementById("gallery");
+      const loader = document.getElementById("loader");
+
+      if (!data || !data.length) {
+        loader.textContent = "Tidak ada gambar untuk ditampilkan.";
+        return;
+      }
+
+      // Urutkan terbaru ke terlama
+      data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+
+        div.innerHTML = `
+          <img src="${convertToView(item.url)}" 
+               alt="${item.name}" 
+               loading="lazy"
+               onerror="this.src='https://via.placeholder.com/300x200?text=Gagal+memuat'">
+          <div class="name">${item.name}</div>
+          <div class="date">${new Date(item.date).toLocaleString("id-ID")}</div>
+        `;
+        gallery.appendChild(div);
+      });
+
+      // Tampilkan grid & sembunyikan loader
+      loader.style.display = "none";
+      gallery.style.display = "grid";
+    })
+    .catch(err => {
+      const loader = document.getElementById("loader");
+      loader.textContent = "Gagal memuat data.";
+      console.error(err);
+    });
+</script>
+
+</body>
+</html>
