@@ -3,31 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Pull & Bear</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --primary: #1e40af;         /* Biru elegan */
+            --primary-light: #3b82f6;   /* Biru lebih terang */
+        }
+    </style>
 </head>
-<body class="bg-blue-600">
-   <div class="text-center">
-        <h1 class="text-[3.5em] text-[var(--primary)] underline italic m-0">PUll & Bear</h1>
-        <p class="mt-[5px] text-[20px] text-[var(--primary-light)]">Pakaian Termewah & Ternyaman</p>
+<body class="bg-gray-100">
+
+    <!-- HEADER -->
+    <header class="text-center py-8">
+        <h1 class="text-[3.5em] text-[var(--primary)] underline italic font-bold m-0">
+            Pull & Bear
+        </h1>
+        <p class="mt-2 text-[20px] text-[var(--primary-light)]">
+            Pakaian Termewah & Ternyaman
+        </p>
+    </header>
+
+    <!-- RUNNING TEXT -->
+    <div class="bg-blue-600 text-white py-2 text-center text-lg tracking-wide">
+        <span class="animate-pulse">Tentukan Outfit Kalian dengan Pull & Bear</span>
     </div>
-    <!--RUNNiNG TEXT-->
-    <div class="">
-        <span class="text-[20px] tracking-[1px]">Tentukan Outfit Kalian dengan Pull & Bear</span>
-    </div>
-    <nav>
-        <a href="#">Profile</a>
-        <a href="#">Produk</a>
-        <a href="#">Contack</a>
+
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-md py-4 flex justify-center space-x-8 text-lg font-medium">
+        <a href="#" class="hover:text-blue-600 transition">Profile</a>
+        <a href="#" class="hover:text-blue-600 transition">Produk</a>
+        <a href="#" class="hover:text-blue-600 transition">Contact</a>
     </nav>
 
-    <main class="">
-        <h2>Pull & Bear Outfit pilihan Terbaik</h2>
-        <p>Mau keren? Pakai Outfit Pull & Bear Solusi Nya</p>
+    <!-- MAIN -->
+    <main class="max-w-3xl mx-auto mt-10 bg-white p-8 shadow-lg rounded-xl">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3">
+            Pull & Bear Outfit Pilihan Terbaik
+        </h2>
+        <p class="text-gray-600 text-lg">
+            Mau keren? Pakai Outfit Pull & Bear solusinya!
+        </p>
+
+        <!-- Contoh Gambar Produk -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="bg-gray-100 rounded-lg shadow p-4 hover:scale-105 transition cursor-pointer">
+                <img src="https://via.placeholder.com/200" class="rounded-md mx-auto">
+                <p class="text-center mt-2 font-semibold">Hoodie Premium</p>
+            </div>
+
+            <div class="bg-gray-100 rounded-lg shadow p-4 hover:scale-105 transition cursor-pointer">
+                <img src="https://via.placeholder.com/200" class="rounded-md mx-auto">
+                <p class="text-center mt-2 font-semibold">Jacket Streetwear</p>
+            </div>
+
+            <div class="bg-gray-100 rounded-lg shadow p-4 hover:scale-105 transition cursor-pointer">
+                <img src="https://via.placeholder.com/200" class="rounded-md mx-auto">
+                <p class="text-center mt-2 font-semibold">Kaos Oversize</p>
+            </div>
+        </div>
     </main>
     
-    <footer>
-        &copy; 2026 Gunakan Outfit terkmewah dan Ternyaman di Pull & Bears
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 mt-10 text-white text-center py-4">
+        &copy; 2026 Gunakan Outfit Termewah dan Ternyaman di Pull & Bear
     </footer>
+
 </body>
 </html>
