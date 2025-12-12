@@ -1,0 +1,156 @@
+<!-- ========================================================== -->
+<!-- 🧩 CONTENT TEMPLATE #1 — LANDING SHOP BASIC (SPA VERSION) -->
+<!-- ========================================================== -->
+
+<!-- 
+[ENG 🇬🇧]
+1. PURPOSE: This section is your main content for a single-page store interface. 
+   It includes navigation (Home, Shop, About) and dynamically loaded sections.
+2. FUNCTION: The script below works using "hash routing" (#home, #shop, #about). 
+   Clicking navigation links replaces content instantly without page reload.
+3. EDITING GUIDE: 
+   - You can freely change text, images, or colors inside the 'routes' object.
+   - Keep quotation marks and backticks (`) intact! Removing one can break your SPA.
+   - Always make a backup before editing any JavaScript or HTML content.
+4. DUPLICATING:
+   - To add a new page, copy one route block and rename it (e.g., contact, gallery).
+   - Add a link in your header with <a href="#contact">Contact</a>.
+5. STYLE:
+   - All visuals are powered by TailwindCSS utility classes.
+   - You can adjust spacing, typography, or grid columns easily.
+6. POSITION:
+   - Place this block after your header and before the footer.
+7. WARNING:
+   - Do not delete or move the <script> part unless you understand JavaScript.
+8. LICENSE:
+   - Educational / commercial template package by Mister Fo.
+   - Version: Content v1.0.0
+
+[POR 🇧🇷]
+1. PROPÓSITO: Esta seção é o conteúdo principal para uma loja em página única.
+   Inclui navegação (Home, Shop, About) e seções carregadas dinamicamente.
+2. FUNÇÃO: O script abaixo usa “hash routing” (#home, #shop, #about). 
+   Clicar nos links muda o conteúdo instantaneamente sem recarregar a página.
+3. GUIA DE EDIÇÃO:
+   - Você pode alterar livremente texto, imagens e cores dentro do objeto 'routes'.
+   - Mantenha as aspas e crases (`) intactas! Remover uma pode quebrar seu SPA.
+   - Sempre faça backup antes de editar JavaScript ou HTML.
+4. DUPLICAÇÃO:
+   - Para adicionar uma nova página, copie um bloco de rota e renomeie-o (ex: contato, galeria).
+   - Adicione um link no cabeçalho com <a href="#contact">Contato</a>.
+5. ESTILO:
+   - Todo o visual usa classes utilitárias do TailwindCSS.
+   - Ajuste facilmente espaçamento, tipografia ou colunas de grade.
+6. POSIÇÃO:
+   - Coloque este bloco após o cabeçalho e antes do rodapé.
+7. AVISO:
+   - Não exclua nem mova o <script> se não entender JavaScript.
+8. LICENÇA:
+   - Pacote de modelo educacional/comercial por Mister Fo.
+   - Versão: Content v1.0.0
+
+[CHN 🇨🇳]
+1. 目的：此部分是单页商店的主要内容，包括导航（主页、商店、关于）。
+2. 功能：下方脚本使用 “哈希路由” (#home, #shop, #about)，点击导航后内容会即时切换，无需重新加载页面。
+3. 编辑指南：
+   - 可自由修改 'routes' 对象内的文字、图片和颜色。
+   - 请勿删除引号或反引号 (`)，否则SPA会出错。
+   - 编辑前请务必备份。
+4. 复制：
+   - 想新增页面时，复制一个路由块并重命名（如 contact、gallery）。
+   - 在页眉中添加 <a href="#contact">联系</a>。
+5. 样式：
+   - 所有样式基于 TailwindCSS 实用类。
+   - 可轻松调整间距、字体或网格列。
+6. 位置：
+   - 将此模块放在页眉之后、页脚之前。
+7. 警告：
+   - 除非你熟悉 JavaScript，否则不要删除或移动 <script>。
+8. 许可证：
+   - Mister Fo 出品教育/商业模板。
+   - 版本：Content v1.0.0
+
+[IND 🇮🇩]
+1. TUJUAN: Bagian ini adalah konten utama toko versi SPA (Single Page Application).
+   Sudah termasuk navigasi (Home, Shop, About) dan pemuatan halaman otomatis.
+2. FUNGSI: Script di bawah bekerja dengan “hash routing” (#home, #shop, #about).
+   Saat link diklik, konten berganti tanpa reload halaman.
+3. PANDUAN EDIT:
+   - Bebas ubah teks, gambar, dan warna di dalam objek 'routes'.
+   - Jangan hapus tanda petik atau backtick (`), bisa bikin SPA error.
+   - Selalu buat backup sebelum mengedit.
+4. DUPLIKASI:
+   - Untuk nambah halaman baru, salin satu blok route dan ubah namanya (misal: contact, gallery).
+   - Tambah link di header dengan <a href="#contact">Kontak</a>.
+5. GAYA:
+   - Semua style pakai TailwindCSS, tinggal ubah class sesuai kebutuhan.
+6. PENEMPATAN:
+   - Letakkan blok ini setelah header dan sebelum footer.
+7. PERINGATAN:
+   - Jangan hapus bagian <script> kalau belum paham JavaScript.
+8. LISENSI:
+   - Template edukasi/komersial oleh Mister Fo.
+   - Versi: Content v1.0.0
+-->
+
+<!-- =================== CLEAN CODE START =================== -->
+<section>
+  <div class="bg-white text-gray-800 font-sans px-6 py-24">
+
+    <!-- Hero -->
+    <div class="max-w-5xl mx-auto text-center mb-24">
+      <h1 class="text-6xl font-bold tracking-tight mb-6">
+        Simple. Elegant. Powerful.
+      </h1>
+      <p class="text-gray-500 text-lg mb-10">
+        Produk premium yang dirancang dengan kesederhanaan dan presisi. Kualitas tanpa kompromi.
+      </p>
+      <a href="#shop" class="px-10 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition">
+        Explore Products
+      </a>
+    </div>
+
+    <!-- Feature Icons -->
+    <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 mb-24">
+      <div class="text-center">
+        <img src="https://via.placeholder.com/120" class="mx-auto mb-4 opacity-90">
+        <p class="text-gray-600">Precision Engineering</p>
+      </div>
+      <div class="text-center">
+        <img src="https://via.placeholder.com/120" class="mx-auto mb-4 opacity-90">
+        <p class="text-gray-600">Premium Materials</p>
+      </div>
+      <div class="text-center">
+        <img src="https://via.placeholder.com/120" class="mx-auto mb-4 opacity-90">
+        <p class="text-gray-600">Sustainable Design</p>
+      </div>
+    </div>
+
+    <!-- Product Showcase -->
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center mb-32">
+
+      <div>
+        <h2 class="text-4xl font-bold mb-4">Ultimate Comfort</h2>
+        <p class="text-gray-500 mb-6">
+          Dibuat untuk mendukung aktivitas padat, dengan detail desain presisi tanpa gangguan visual.
+        </p>
+        <a href="#details" class="text-gray-900 font-medium underline hover:text-gray-700">Learn more</a>
+      </div>
+
+      <div>
+        <img src="https://via.placeholder.com/600x450" class="rounded-2xl shadow">
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="max-w-3xl mx-auto bg-gray-100 rounded-3xl py-16 px-10 text-center">
+      <h2 class="text-3xl font-bold mb-4">Designed for Life</h2>
+      <p class="text-gray-500 mb-6">Upgrade rutinitasmu dengan pengalaman kelas premium.</p>
+      <a href="#buy" class="px-10 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition">
+        Shop Now
+      </a>
+    </div>
+
+  </div>
+</section>

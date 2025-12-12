@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RUPA GOODS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root {
+    --primary: #111111;
+    --primary-light: #2e2e2e;
+    --bg: #faf7f5;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --accent: #e5d3c5;
+    --border: #c5b5a9;
+}
+
+* { transition: all 0.3s ease; }
+.pattern-grid {
+    background-color: #faf7f5;
+    background-image:
+        linear-gradient(#e8e2dc 1px, transparent 1px),
+        linear-gradient(90deg, #e8e2dc 1px, transparent 1px);
+    background-size: 35px 35px;
+}
+
+.new-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 6%;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+
+.brand-block { text-align: left; }
+
+.brand-title {
+    font-size: 2.7em;
+    font-style: italic;
+    letter-spacing: 2px;
+    color: var(--primary);
+}
+
+.brand-sub {
+    margin-top: 3px;
+    font-size: 15px;
+    color: var(--primary-light);
+}
+
+.nav-menu a {
+    margin-left: 28px;
+    text-decoration: none;
+    color: var(--primary-light);
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+.nav-menu a:hover { color: var(--primary); }
+
+@keyframes marquee {
+    from { transform: translateX(0%); }
+    to { transform: translateX(-100%); }
+}
+.running-strip-min {
+    margin-top: 5px;
+    padding: 8px 0;
+    background: #f2eeeb;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #4a4a4a;
+}
+.running-strip-min span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 20s linear infinite;
+}
+
+.lightbox { display:none; }
+.lightbox:target {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+}
+.lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    font-size: 45px;
+    color: white;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body class="m-0 font-serif bg-[var(--bg)] text-[var(--text)]">
+
+<div class="grid grid-cols-5 grid-rows-7 gap-5">
+        <div class="col-span-5">
+<header class="new-header sticky top-0 bg-[var(--bg)]/80 backdrop-blur-md shadow-sm">
+    <div class="brand-block">
+        <h1 class="brand-title tracking-wide">RUPA GOODS</h1>
+        <p class="brand-sub">Where Every Style Finds Its Shape</p>
+    </div>
+
+    <nav class="nav-menu flex items-center">
+        <a href="#collection">COLLECTION</a>
+        <a href="#lookbook">LOOKBOOK</a>
+        <a href="#contact">CONTACT</a>
+        <a href="#about">ABOUT</a>
+    </nav>
+</header></div>
+    <div class="col-span-5 row-start-2">
+<div class="overflow-hidden whitespace-nowrap running-strip-min">
+    <span>RUPA GOODS • Contemporary Fashion • Minimal Aesthetic • Crafted for Modern Identity • RUPA GOODS</span>
+</div></div>
+    <div class="col-span-3 col-start-2 row-start-3">8</div>
+    <div class="col-span-2 row-span-2 row-start-4">9</div>
+    <div class="row-span-2 col-start-3 row-start-4">10</div>
+    <div class="row-span-2 col-start-4 row-start-4">11</div>
+    <div class="col-start-5 row-start-4">12</div>
+    <div class="col-start-5 row-start-5">13</div>
+    <div class="col-span-5 row-start-6">14</div>
+    <div class="col-span-5 row-start-7">15</div>
+</div>
+</body>
+</html>
