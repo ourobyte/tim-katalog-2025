@@ -1,234 +1,568 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grecia Repo Viewer</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  .flex-full-height { min-height: 0; }
-  #fileDisplay { white-space: pre-wrap; word-break: break-word; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWin - SuperTabs</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            750: '#2d3748',
+                            850: '#1a202c',
+                            950: '#0d1117',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Ace Editor (High Performance Code Editor) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.7/ace.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar for Webkit */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4a5568; }
+        ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+        /* Ensure editor takes remaining height */
+        #editor { 
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen text-gray-800 antialiased flex flex-col lg:flex-row">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 antialiased h-screen flex flex-col overflow-hidden transition-colors duration-200">
 
-<header class="p-4 bg-white shadow-md lg:hidden flex items-center justify-between sticky top-0 z-40">
-    <h1 class="text-xl font-bold text-gray-900">Grecia Repo</h1>
-    <button id="sidebarToggle" class="p-2 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition duration-150">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-    </button>
-</header>
-
-<div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 w-64 bg-white shadow-2xl lg:shadow-md p-4 overflow-y-auto transition-transform duration-300 ease-in-out z-50 lg:static lg:flex-shrink-0 lg:rounded-r-lg">
-
-    <div class="flex justify-between items-center mb-4 lg:hidden">
-        <h2 class="text-xl font-bold">Files</h2>
-        <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 p-1 rounded-full">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+<!-- Header -->
+<header class="h-14 bg-white dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0 z-30">
+    <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
+        <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Grecia Editor</h1>
+        <div id="repoInfo" class="hidden md:flex items-center text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            Loading...
+        </div>
     </div>
 
-    <h2 class="text-xl font-bold mb-4 hidden lg:block">Files</h2>
+    <div class="flex items-center gap-2">
+        <!-- Settings/Auth Button -->
+        <button onclick="openSettings()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Settings / GitHub Token">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+        
+        <!-- Dark Mode Toggle -->
+        <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400">
+            <!-- Sun Icon -->
+            <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <!-- Moon Icon -->
+            <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+    </div>
+</header>
 
-    <div id="breadcrumb" class="text-sm text-gray-600 mb-4"></div>
+<!-- Main Layout -->
+<div class="flex flex-1 overflow-hidden relative">
 
-    <div id="fileList" class="flex flex-col space-y-2">
-        <div class="text-gray-500 text-sm italic">Loading files...</div>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="absolute inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-20 transition-transform duration-300">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center lg:hidden">
+            <h2 class="font-bold text-gray-700 dark:text-gray-200">Explorer</h2>
+            <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Breadcrumb -->
+        <div id="breadcrumb" class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 font-mono whitespace-nowrap overflow-x-auto scrollbar-hide"></div>
+
+        <!-- File List (Scrollable) -->
+        <div id="fileList" class="flex-1 overflow-y-auto p-2 space-y-0.5">
+            <div class="text-gray-400 text-sm text-center mt-4">Loading files...</div>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 z-10 lg:hidden"></div>
+
+    <!-- Main Content (Editor) -->
+    <main class="flex-1 flex flex-col min-w-0 lg:ml-64 bg-gray-50 dark:bg-gray-900">
+        
+        <!-- Editor Toolbar -->
+        <div class="h-10 bg-gray-100 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0">
+            <div class="flex items-center gap-2 overflow-hidden">
+                <span id="currentFileName" class="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">No file selected</span>
+                <span id="unsavedIndicator" class="hidden w-2 h-2 rounded-full bg-yellow-500"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                 <button id="viewWebBtn" class="hidden px-3 py-1 text-xs font-medium text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 rounded hover:bg-green-200 transition">Preview HTML</button>
+                 <button id="viewCodeBtn" class="hidden px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded hover:bg-blue-200 transition">Code</button>
+            </div>
+        </div>
+
+        <!-- Editor Container -->
+        <div class="flex-1 relative bg-white dark:bg-gray-900">
+            <!-- Ace Editor Hook -->
+            <div id="editor"></div>
+            
+            <!-- Iframe Preview (Hidden by default) -->
+            <iframe id="webPreview" class="absolute inset-0 w-full h-full bg-white hidden z-10" sandbox="allow-scripts allow-same-origin"></iframe>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 z-20 bg-gray-50 dark:bg-gray-900">
+                <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <p>Select a file to edit</p>
+            </div>
+        </div>
+
+        <!-- Commit Bar -->
+        <div class="bg-white dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700 p-3 flex flex-col sm:flex-row gap-3 items-center shrink-0">
+            <input type="text" id="commitMessage" placeholder="Commit message (e.g. Update index.html)" class="flex-1 w-full px-3 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:outline-none focus:border-blue-500">
+            <button id="commitBtn" class="w-full sm:w-auto px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2" disabled>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <span>Commit Changes</span>
+            </button>
+        </div>
+    </main>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Settings</h3>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GitHub Personal Access Token (PAT)</label>
+            <input type="password" id="githubToken" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ghp_xxxxxxxxxxxx">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Required to Commit changes. Token is stored locally in your browser.</p>
+            <p class="text-xs text-red-500 mt-1">Warning: Never share this token.</p>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button onclick="closeSettings()" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancel</button>
+            <button onclick="saveSettings()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Save Token</button>
+        </div>
     </div>
 </div>
 
-<div id="sidebarOverlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 z-40 lg:hidden"></div>
-
-<main class="flex-1 p-4 md:p-6 flex flex-col flex-full-height">
-    <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col flex-1 min-h-[70vh]">
-        <h2 class="text-2xl font-bold mb-4 text-blue-600">File Viewer</h2>
-
-        <div id="codeViewContainer" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-auto mb-4">
-            <pre id="fileDisplay" class="text-sm md:text-base text-gray-800 p-0 m-0">Select a file or folder from the sidebar.</pre>
-        </div>
-
-        <div id="iframeContainer" class="flex-1 mb-4 hidden rounded-lg overflow-hidden">
-            <iframe id="fileIframe" class="w-full h-full border-2 border-green-500 rounded-lg" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-
-        <div class="flex flex-wrap gap-3 mt-auto pt-4 border-t border-gray-100">
-            <button id="copyBtn" class="px-5 py-2 bg-blue-600 text-white rounded-full font-semibold shadow-md hover:bg-blue-700 transition duration-150 disabled:opacity-50" disabled>Copy Code</button>
-            <button id="viewWebBtn" class="px-5 py-2 bg-green-600 text-white rounded-full font-semibold shadow-md hover:bg-green-700 transition duration-150 hidden">View Web Preview</button>
-            <button id="viewCodeBtn" class="px-5 py-2 bg-gray-600 text-white rounded-full font-semibold shadow-md hover:bg-gray-700 transition duration-150 hidden">View Code</button>
-        </div>
-    </div>
-</main>
-
+<!-- Toast -->
 <div id="toastContainer" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
 
 <script>
-const user = 'musmuschio';
-const repo = 'tim-katalog-2025';
+// ==========================
+// CONFIG
+// ==========================
+const config = {
+    user: "musmuschio",
+    repo: "tim-katalog-2025"
+};
 
-const sidebar = document.getElementById('sidebar');
-const sidebarToggle = document.getElementById('sidebarToggle');
-const closeSidebar = document.getElementById('closeSidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-const fileListContainer = document.getElementById('fileList');
-const breadcrumb = document.getElementById('breadcrumb');
+// ==========================
+// STATE
+// ==========================
+const state = {
+    currentPath: "",
+    currentFileSha: null,
+    currentFileName: null,
+    isDirty: false
+};
 
-const fileDisplay = document.getElementById('fileDisplay');
-const iframeContainer = document.getElementById('iframeContainer');
-const fileIframe = document.getElementById('fileIframe');
-const codeViewContainer = document.getElementById('codeViewContainer');
-const copyBtn = document.getElementById('copyBtn');
-const viewWebBtn = document.getElementById('viewWebBtn');
-const viewCodeBtn = document.getElementById('viewCodeBtn');
+// ==========================
+// DOM ELEMENTS
+// ==========================
+const els = {
+    sidebar: document.getElementById("sidebar"),
+    overlay: document.getElementById("sidebarOverlay"),
+    fileList: document.getElementById("fileList"),
+    breadcrumb: document.getElementById("breadcrumb"),
+    editorBox: document.getElementById("editor"),
+    emptyState: document.getElementById("emptyState"),
+    fileName: document.getElementById("currentFileName"),
+    unsaved: document.getElementById("unsavedIndicator"),
+    commitBtn: document.getElementById("commitBtn"),
+    commitMsg: document.getElementById("commitMessage"),
+    repoInfo: document.getElementById("repoInfo"),
+    preview: document.getElementById("webPreview"),
+    btnViewWeb: document.getElementById("viewWebBtn"),
+    btnViewCode: document.getElementById("viewCodeBtn")
+};
 
-let currentPath = '';
+// ==========================
+// INIT
+// ==========================
+let editor;
 
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `p-4 text-sm font-medium text-white rounded-lg shadow-xl ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} transform transition-all duration-300 translate-y-full opacity-0`;
-    toast.textContent = message;
-    document.getElementById('toastContainer').appendChild(toast);
+document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+    initEditor();
 
-    setTimeout(() => { toast.style.transform = 'translateY(0)'; toast.style.opacity = '1'; }, 10);
-    setTimeout(() => {
-        toast.style.transform = 'translateY(20px)';
-        toast.style.opacity = '0';
-        toast.addEventListener('transitionend', () => toast.remove());
-    }, 3000);
+    els.repoInfo.textContent = `${config.user} / ${config.repo}`;
+    fetchFiles();
+});
+
+// ==========================
+// EDITOR SETUP
+// ==========================
+function initEditor() {
+    editor = ace.edit("editor");
+    editor.setTheme("ace/theme/chrome");
+    editor.session.setMode("ace/mode/text");
+    editor.setFontSize(14);
+    editor.setShowPrintMargin(false);
+
+    editor.session.on("change", () => {
+        if (!state.isDirty && state.currentFileSha) {
+            state.isDirty = true;
+            els.unsaved.classList.remove("hidden");
+            els.commitBtn.disabled = false;
+        }
+    });
 }
 
-function updateBreadcrumb() {
-    if (!currentPath) {
-        breadcrumb.innerHTML = `<span class="font-semibold">Root</span>`;
+// ==========================
+// THEME CONTROLLER
+// ==========================
+function initTheme() {
+    const dark = localStorage.theme === "dark"
+        || (!localStorage.theme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    document.documentElement.classList.toggle("dark", dark);
+    document.getElementById("moonIcon").classList.toggle("hidden", dark);
+    document.getElementById("sunIcon").classList.toggle("hidden", !dark);
+
+    if (editor) editor.setTheme(dark ? "ace/theme/one_dark" : "ace/theme/chrome");
+}
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    localStorage.theme = dark ? "dark" : "light";
+
+    document.getElementById("moonIcon").classList.toggle("hidden");
+    document.getElementById("sunIcon").classList.toggle("hidden");
+
+    editor.setTheme(dark ? "ace/theme/one_dark" : "ace/theme/chrome");
+});
+
+// ==========================
+// SIDEBAR
+// ==========================
+function toggleSidebar() {
+    const closed = els.sidebar.classList.contains("-translate-x-full");
+
+    els.sidebar.classList.toggle("-translate-x-full", !closed);
+    els.overlay.classList.toggle("opacity-0", !closed);
+    els.overlay.classList.toggle("pointer-events-none", !closed);
+}
+
+document.getElementById("sidebarToggle").onclick = toggleSidebar;
+document.getElementById("closeSidebar").onclick = toggleSidebar;
+els.overlay.onclick = toggleSidebar;
+
+// ==========================
+// API HELPERS
+// ==========================
+function authHeader() {
+    const token = localStorage.getItem("gh_token");
+    return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
+// ==========================
+// FETCH FILE LIST
+// ==========================
+async function fetchFiles(path = "") {
+    state.currentPath = path;
+    updateBreadcrumb();
+
+    els.fileList.innerHTML = loaderView();
+
+    try {
+        const url = `https://api.github.com/repos/${config.user}/${config.repo}/contents/${path}`;
+        const res = await fetch(url, { headers: authHeader() });
+
+        if (res.status === 404 || res.status === 403) throw new Error("AuthRequired");
+        if (!res.ok) throw new Error("Failed to load repository content.");
+
+        const files = await res.json();
+
+        files.sort((a, b) =>
+            a.type === b.type ? a.name.localeCompare(b.name) : (a.type === "dir" ? -1 : 1)
+        );
+
+        renderFileList(files, path);
+
+    } catch (err) {
+        if (err.message === "AuthRequired") {
+            els.fileList.innerHTML = authRequiredView();
+        } else {
+            els.fileList.innerHTML = errorView(err.message);
+        }
+    }
+}
+
+// ==========================
+// RENDER FILE LIST
+// ==========================
+function renderFileList(files, path) {
+    els.fileList.innerHTML = "";
+
+    if (path) {
+        const parent = path.split("/").slice(0, -1).join("/");
+        els.fileList.appendChild(createEntry("..", "dir", () => fetchFiles(parent)));
+    }
+
+    if (!files.length) {
+        els.fileList.innerHTML = `<div class="text-gray-400 text-sm text-center mt-4">Empty folder</div>`;
         return;
     }
 
-    const parts = currentPath.split('/');
-    let accum = '';
-    breadcrumb.innerHTML = parts.map((part, index) => {
-        accum += (index > 0 ? '/' : '') + part;
-        return `<span class="text-blue-600 cursor-pointer hover:underline" onclick="fetchFiles('${accum}')">${part}</span>`;
-    }).join(' / ');
+    files.forEach(item => {
+        const button = createEntry(
+            item.name,
+            item.type,
+            () => (item.type === "dir" ? fetchFiles(item.path) : loadFile(item))
+        );
+        els.fileList.appendChild(button);
+    });
 }
 
-function openSidebar() {
-    sidebar.classList.remove('-translate-x-full');
-    sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
-    sidebarOverlay.classList.add('opacity-50', 'pointer-events-auto');
+function createEntry(name, type, cb) {
+    const btn = document.createElement("button");
+    const icon = type === "dir"
+        ? `<svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a 2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`
+        : `<svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586l5.414 5.414V19a2 2 0 01-2 2z"/></svg>`;
+
+    btn.className = `w-full flex items-center px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+        type === "dir" ? "font-medium" : ""
+    }`;
+
+    btn.innerHTML = `${icon}<span class="truncate">${name}</span>`;
+    btn.onclick = cb;
+
+    return btn;
 }
 
-function closeSidebarHandler() {
-    sidebar.classList.add('-translate-x-full');
-    sidebarOverlay.classList.remove('opacity-50', 'pointer-events-auto');
-    sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+// ==========================
+// BREADCRUMB
+// ==========================
+function updateBreadcrumb() {
+    if (!state.currentPath) {
+        els.breadcrumb.innerHTML = `<span onclick="fetchFiles('')" class="cursor-pointer font-bold text-blue-600">root</span>`;
+        return;
+    }
+
+    const parts = state.currentPath.split("/");
+    let chain = "";
+
+    els.breadcrumb.innerHTML =
+        `<span onclick="fetchFiles('')" class="cursor-pointer font-bold text-blue-600">root</span>` +
+        parts.map((p, idx) => {
+            chain += (idx ? "/" : "") + p;
+            return `<span class="text-gray-400 mx-1">/</span>
+                    <span onclick="fetchFiles('${chain}')" class="cursor-pointer hover:underline">${p}</span>`;
+        }).join("");
 }
 
-sidebarToggle.addEventListener('click', openSidebar);
-closeSidebar.addEventListener('click', closeSidebarHandler);
-sidebarOverlay.addEventListener('click', closeSidebarHandler);
+// ==========================
+// LOAD FILE
+// ==========================
+async function loadFile(file) {
+    els.emptyState.classList.add("hidden");
+    els.fileName.textContent = file.name;
 
-window.addEventListener('resize', () => {
-    if (window.innerWidth >= 1024) closeSidebarHandler();
-});
+    els.preview.classList.add("hidden");
+    els.btnViewWeb.classList.add("hidden");
+    els.btnViewCode.classList.add("hidden");
 
-async function fetchFiles(path = '') {
-    currentPath = path;
-    updateBreadcrumb();
+    state.currentFileSha = file.sha;
+    state.currentFileName = file.path;
+    state.isDirty = false;
+
+    els.unsaved.classList.add("hidden");
+    els.commitBtn.disabled = true;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    const modeMap = {
+        js: "javascript",
+        html: "html",
+        css: "css",
+        json: "json",
+        md: "markdown"
+    };
+
+    editor.session.setMode(`ace/mode/${modeMap[ext] || "text"}`);
 
     try {
-        const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
-        const res = await fetch(url);
-        const files = await res.json();
+        const res = await fetch(file.download_url);
+        const text = await res.text();
 
-        fileListContainer.innerHTML = '';
+        editor.setValue(text, -1);
 
-        if (path) {
-            const upBtn = document.createElement('button');
-            upBtn.textContent = '.. (back)';
-            upBtn.className = 'text-left px-3 py-2 text-gray-500 rounded-lg hover:bg-gray-100 font-semibold';
-            upBtn.onclick = () => {
-                const parent = path.split('/').slice(0, -1).join('/');
-                fetchFiles(parent);
-            };
-            fileListContainer.appendChild(upBtn);
-        }
+        if (ext === "html" || ext === "htm") setupHTMLPreview();
 
-        files.forEach(file => {
-            const btn = document.createElement('button');
-            btn.textContent = file.name;
-            btn.className = 'text-left px-3 py-2 rounded-lg truncate transition duration-150';
+        if (window.innerWidth < 1024) toggleSidebar();
 
-            if (file.type === 'dir') {
-                btn.classList.add('text-blue-600', 'hover:bg-blue-50', 'font-semibold');
-                btn.onclick = () => fetchFiles(file.path);
-            } else {
-                btn.classList.add('text-gray-700', 'hover:bg-blue-100');
-                btn.onclick = () => loadFile(file);
+    } catch {
+        showToast("Failed to load file content", "error");
+    }
+}
+
+function setupHTMLPreview() {
+    els.btnViewWeb.classList.remove("hidden");
+
+    els.btnViewWeb.onclick = () => {
+        els.preview.srcdoc = editor.getValue();
+        els.preview.classList.remove("hidden");
+        els.editorBox.classList.add("hidden");
+        els.btnViewWeb.classList.add("hidden");
+        els.btnViewCode.classList.remove("hidden");
+    };
+
+    els.btnViewCode.onclick = () => {
+        els.preview.classList.add("hidden");
+        els.editorBox.classList.remove("hidden");
+        els.btnViewWeb.classList.remove("hidden");
+        els.btnViewCode.classList.add("hidden");
+    };
+}
+
+// ==========================
+// COMMIT CHANGES
+// ==========================
+els.commitBtn.addEventListener("click", async () => {
+    const token = localStorage.getItem("gh_token");
+    if (!token) return openSettings(), showToast("Token missing", "error");
+
+    const msg = els.commitMsg.value.trim();
+    if (!msg) return showToast("Commit message required", "error");
+
+    els.commitBtn.disabled = true;
+    els.commitBtn.textContent = "Committing...";
+
+    try {
+        const content = editor.getValue();
+        const encoded = btoa(unescape(encodeURIComponent(content)));
+
+        const body = {
+            message: msg,
+            content: encoded,
+            sha: state.currentFileSha
+        };
+
+        const res = await fetch(
+            `https://api.github.com/repos/${config.user}/${config.repo}/contents/${state.currentFileName}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
             }
+        );
 
-            fileListContainer.appendChild(btn);
-        });
+        if (!res.ok) throw new Error("Commit failed");
+
+        const data = await res.json();
+        state.currentFileSha = data.content.sha;
+        state.isDirty = false;
+
+        els.unsaved.classList.add("hidden");
+        els.commitMsg.value = "";
+
+        showToast("Changes committed!");
 
     } catch (err) {
-        fileListContainer.innerHTML = `<div class="text-red-500">Failed: ${err.message}</div>`;
+        showToast(err.message, "error");
     }
+
+    els.commitBtn.textContent = "Commit Changes";
+});
+
+// ==========================
+// SETTINGS
+// ==========================
+function openSettings() {
+    document.getElementById("settingsModal").classList.remove("hidden");
+    document.getElementById("githubToken").value =
+        localStorage.getItem("gh_token") || "";
 }
 
-async function loadFile(file) {
-    fileDisplay.textContent = 'Loading file...';
-    copyBtn.disabled = true;
-    iframeContainer.classList.add('hidden');
-    codeViewContainer.classList.remove('hidden');
-    viewWebBtn.classList.add('hidden');
-    viewCodeBtn.classList.add('hidden');
-
-    const res = await fetch(file.download_url);
-    const text = await res.text();
-    fileDisplay.textContent = text;
-    copyBtn.disabled = false;
-
-    const isHtml = file.name.endsWith('.html') || file.name.endsWith('.htm');
-
-    if (isHtml) {
-        viewWebBtn.classList.remove('hidden');
-        viewWebBtn.onclick = () => {
-            fileIframe.srcdoc = text;
-            iframeContainer.classList.remove('hidden');
-            codeViewContainer.classList.add('hidden');
-            viewWebBtn.classList.add('hidden');
-            viewCodeBtn.classList.remove('hidden');
-        };
-
-        viewCodeBtn.onclick = () => {
-            iframeContainer.classList.add('hidden');
-            codeViewContainer.classList.remove('hidden');
-            viewWebBtn.classList.remove('hidden');
-            viewCodeBtn.classList.add('hidden');
-        };
-    }
+function closeSettings() {
+    document.getElementById("settingsModal").classList.add("hidden");
 }
 
-copyBtn.onclick = () => {
-    const content = fileDisplay.textContent;
-    const textarea = document.createElement('textarea');
-    textarea.textContent = content;
-    textarea.style.position = 'fixed';
-    document.body.appendChild(textarea);
-    textarea.select();
+function saveSettings() {
+    const token = document.getElementById("githubToken").value.trim();
+    if (!token) return;
 
-    try {
-        document.execCommand('copy');
-        showToast('Code copied!');
-    } catch {
-        showToast('Failed to copy.', 'error');
-    }
+    localStorage.setItem("gh_token", token);
+    closeSettings();
+    fetchFiles(state.currentPath);
+    showToast("Token saved!");
+}
 
-    document.body.removeChild(textarea);
-};
+// ==========================
+// TOASTS
+// ==========================
+function showToast(msg, type = "success") {
+    const box = document.createElement("div");
+    box.className =
+        `p-3 text-sm rounded text-white mb-2 transition-all duration-300 ${
+            type === "success"
+                ? "bg-green-600 dark:bg-green-700"
+                : "bg-red-600"
+        }`;
 
-fetchFiles();
+    box.textContent = msg;
+
+    document.getElementById("toastContainer").appendChild(box);
+
+    setTimeout(() => {
+        box.style.opacity = "0";
+        box.style.transform = "translateY(10px)";
+        setTimeout(() => box.remove(), 300);
+    }, 2000);
+}
+
+// ==========================
+// UI HTML BUILDERS
+// ==========================
+function loaderView() {
+    return `
+        <div class="text-center mt-4 text-gray-500">
+            <div class="animate-spin h-5 w-5 mx-auto mb-2 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            Loading...
+        </div>`;
+}
+
+function authRequiredView() {
+    return `
+        <div class="p-4 text-center">
+            <p class="text-gray-500 mb-3">Repo private atau tidak ditemukan</p>
+            <button onclick="openSettings()" class="px-3 py-2 bg-blue-600 text-white rounded">Add GitHub Token</button>
+        </div>`;
+}
+
+function errorView(msg) {
+    return `<div class="text-center text-red-600 p-3">${msg}</div>`;
+}
+
 </script>
 </body>
 </html>
