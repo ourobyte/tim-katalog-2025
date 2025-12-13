@@ -50,25 +50,6 @@
             bottom: 0;
             left: 0;
         }
-
-        /* Custom style for Gencode iframe masking (Sesuai permintaan) */
-        #gencodeIframeMask {
-            /* flex-1 w-full relative overflow-hidden rounded-b-xl */
-            height: 100%;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            border-bottom-left-radius: 0.75rem; /* rounded-xl */
-            border-bottom-right-radius: 0.75rem; /* rounded-xl */
-        }
-        
-        #gencodeIframe {
-            /* transform: translateY(-80px); height: calc(100% + 80px); */
-            transform: translateY(-80px);
-            height: calc(100% + 80px);
-            position: absolute;
-            width: 100%;
-        }
     </style>
 </head>
 
@@ -127,9 +108,9 @@
             <div class="text-gray-400 text-sm text-center mt-4">Loading files...</div>
         </div>
 
-        <!-- NEW: Gencode Labs Button -->
+        <!-- Gencode Labs Link Button -->
         <div class="p-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
-            <button id="gencodeBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-lg transition duration-150 transform hover:scale-[1.01]">
+            <button onclick="window.open('https://gemini.google.com/share/fc36ef4d7a69', '_blank')" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-lg transition duration-150 transform hover:scale-[1.01]">
                 <!-- Magic Wand Icon -->
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
                 <span>Gencode Labs</span>
@@ -221,27 +202,6 @@
     </div>
 </div>
 
-<!-- Gencode Modal -->
-<div id="gencodeModal" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl h-5/6 flex flex-col relative">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
-                Gencode Labs
-            </h3>
-            <button onclick="closeGencodeModal()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <!-- Modal Content (Iframe Container/Mask) -->
-        <div id="gencodeIframeMask">
-            <!-- Iframe uses custom styles defined in the <style> block -->
-            <iframe id="gencodeIframe" src="https://gemini.google.com/share/fc36ef4d7a69" class="w-full h-full absolute transition-transform duration-300 ease-out" sandbox="allow-scripts allow-same-origin"></iframe>
-        </div>
-    </div>
-</div>
-
 <!-- Toast -->
 <div id="toastContainer" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
 
@@ -283,10 +243,6 @@ const els = {
     // View buttons
     btnViewWeb: document.getElementById("viewWebBtn"),
     btnViewCode: document.getElementById("viewCodeBtn"),
-    // Gencode Elements
-    gencodeBtn: document.getElementById("gencodeBtn"),
-    gencodeModal: document.getElementById("gencodeModal"),
-    gencodeIframe: document.getElementById("gencodeIframe"),
     // NEW File Elements
     newFileBtn: document.getElementById("newFileBtn"),
     newFileModal: document.getElementById("newFileModal"),
@@ -306,9 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     els.repoInfo.textContent = `${config.user} / ${config.repo}`;
     fetchFiles();
-
-    // Event Listeners
-    els.gencodeBtn.onclick = openGencodeModal;
 });
 
 // ==========================
@@ -627,7 +580,7 @@ function saveSettings() {
 }
 
 // ==========================
-// NEW FILE MODAL (Tambahan)
+// NEW FILE MODAL
 // ==========================
 function openNewFileModal() {
     els.newFileModal.classList.remove("hidden");
@@ -699,17 +652,6 @@ async function createNewFile() {
         els.createFileButton.disabled = false;
         els.createFileButton.textContent = originalText;
     }
-}
-
-// ==========================
-// GENCODE MODAL
-// ==========================
-function openGencodeModal() {
-    els.gencodeModal.classList.remove("hidden");
-}
-
-function closeGencodeModal() {
-    els.gencodeModal.classList.add("hidden");
 }
 
 // ==========================
