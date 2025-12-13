@@ -16,6 +16,10 @@
                             750: '#2d3748',
                             850: '#1a202c',
                             950: '#0d1117',
+                        },
+                        purple: { // Menambahkan warna ungu untuk tombol Gencode
+                            600: '#7c3aed',
+                            700: '#6d28d9',
                         }
                     }
                 }
@@ -46,6 +50,25 @@
             bottom: 0;
             left: 0;
         }
+
+        /* Custom style for Gencode iframe masking (Sesuai permintaan) */
+        #gencodeIframeMask {
+            /* flex-1 w-full relative overflow-hidden rounded-b-xl */
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border-bottom-left-radius: 0.75rem; /* rounded-xl */
+            border-bottom-right-radius: 0.75rem; /* rounded-xl */
+        }
+        
+        #gencodeIframe {
+            /* transform: translateY(-80px); height: calc(100% + 80px); */
+            transform: translateY(-80px);
+            height: calc(100% + 80px);
+            position: absolute;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -57,13 +80,18 @@
         <button id="sidebarToggle" class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
-        <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">LearnWin Editor</h1>
+        <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Grecia Editor</h1>
         <div id="repoInfo" class="hidden md:flex items-center text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
             Loading...
         </div>
     </div>
 
     <div class="flex items-center gap-2">
+        <!-- NEW FILE Button (Tambahan) -->
+        <button id="newFileBtn" onclick="openNewFileModal()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Buat File Baru">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </button>
+        
         <!-- Settings/Auth Button -->
         <button onclick="openSettings()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Settings / GitHub Token">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -98,6 +126,15 @@
         <div id="fileList" class="flex-1 overflow-y-auto p-2 space-y-0.5">
             <div class="text-gray-400 text-sm text-center mt-4">Loading files...</div>
         </div>
+
+        <!-- NEW: Gencode Labs Button -->
+        <div class="p-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
+            <button id="gencodeBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-lg transition duration-150 transform hover:scale-[1.01]">
+                <!-- Magic Wand Icon -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
+                <span>Gencode Labs</span>
+            </button>
+        </div>
     </aside>
 
     <!-- Overlay -->
@@ -106,7 +143,7 @@
     <!-- Main Content (Editor) -->
     <main class="flex-1 flex flex-col min-w-0 lg:ml-64 bg-gray-50 dark:bg-gray-900">
         
-        <!-- Editor Toolbar (Removed view buttons here) -->
+        <!-- Editor Toolbar -->
         <div class="h-10 bg-gray-100 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0">
             <div class="flex items-center gap-2 overflow-hidden">
                 <span id="currentFileName" class="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">No file selected</span>
@@ -133,7 +170,7 @@
             </div>
         </div>
 
-        <!-- Commit Bar -->
+        <!-- Commit Bar (Footer) -->
         <div class="bg-white dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700 p-3 flex flex-col sm:flex-row gap-3 items-center shrink-0">
             <input type="text" id="commitMessage" placeholder="Commit message (e.g. Update index.html)" class="flex-1 w-full px-3 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:outline-none focus:border-blue-500">
             
@@ -164,6 +201,43 @@
         <div class="flex justify-end gap-2">
             <button onclick="closeSettings()" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancel</button>
             <button onclick="saveSettings()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Save Token</button>
+        </div>
+    </div>
+</div>
+
+<!-- NEW: New File Modal -->
+<div id="newFileModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Buat File Baru</h3>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama File (di direktori saat ini)</label>
+            <p id="currentDirDisplay" class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-mono truncate"></p>
+            <input type="text" id="newFileNameInput" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. style.css atau components/new.js">
+        </div>
+        <div class="flex justify-end gap-2">
+            <button onclick="closeNewFileModal()" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Batal</button>
+            <button id="createFileButton" onclick="createNewFile()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Buat File</button>
+        </div>
+    </div>
+</div>
+
+<!-- Gencode Modal -->
+<div id="gencodeModal" class="fixed inset-0 bg-black/70 z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl h-5/6 flex flex-col relative">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
+                Gencode Labs
+            </h3>
+            <button onclick="closeGencodeModal()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <!-- Modal Content (Iframe Container/Mask) -->
+        <div id="gencodeIframeMask">
+            <!-- Iframe uses custom styles defined in the <style> block -->
+            <iframe id="gencodeIframe" src="https://gencode-labs.dev/embed" class="w-full h-full absolute transition-transform duration-300 ease-out" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
     </div>
 </div>
@@ -206,9 +280,19 @@ const els = {
     commitMsg: document.getElementById("commitMessage"),
     repoInfo: document.getElementById("repoInfo"),
     preview: document.getElementById("webPreview"),
-    // Re-use IDs for buttons in the new location (Commit Bar)
+    // View buttons
     btnViewWeb: document.getElementById("viewWebBtn"),
-    btnViewCode: document.getElementById("viewCodeBtn")
+    btnViewCode: document.getElementById("viewCodeBtn"),
+    // Gencode Elements
+    gencodeBtn: document.getElementById("gencodeBtn"),
+    gencodeModal: document.getElementById("gencodeModal"),
+    gencodeIframe: document.getElementById("gencodeIframe"),
+    // NEW File Elements
+    newFileBtn: document.getElementById("newFileBtn"),
+    newFileModal: document.getElementById("newFileModal"),
+    newFileNameInput: document.getElementById("newFileNameInput"),
+    currentDirDisplay: document.getElementById("currentDirDisplay"),
+    createFileButton: document.getElementById("createFileButton"),
 };
 
 // ==========================
@@ -222,6 +306,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     els.repoInfo.textContent = `${config.user} / ${config.repo}`;
     fetchFiles();
+
+    // Event Listeners
+    els.gencodeBtn.onclick = openGencodeModal;
 });
 
 // ==========================
@@ -537,6 +624,92 @@ function saveSettings() {
     closeSettings();
     fetchFiles(state.currentPath);
     showToast("Token saved!");
+}
+
+// ==========================
+// NEW FILE MODAL (Tambahan)
+// ==========================
+function openNewFileModal() {
+    els.newFileModal.classList.remove("hidden");
+    const dir = state.currentPath ? state.currentPath + "/" : "/";
+    els.currentDirDisplay.textContent = dir;
+    els.newFileNameInput.value = "";
+    els.newFileNameInput.focus();
+}
+
+function closeNewFileModal() {
+    els.newFileModal.classList.add("hidden");
+}
+
+async function createNewFile() {
+    const token = localStorage.getItem("gh_token");
+    if (!token) {
+        closeNewFileModal();
+        openSettings();
+        return showToast("Token GitHub diperlukan untuk membuat file baru.", "error");
+    }
+
+    const fileName = els.newFileNameInput.value.trim();
+    if (!fileName) {
+        return showToast("Nama file tidak boleh kosong.", "error");
+    }
+
+    // Construct full path
+    const fullPath = state.currentPath ? `${state.currentPath}/${fileName}` : fileName;
+
+    // Prevent double-clicking
+    els.createFileButton.disabled = true;
+    const originalText = els.createFileButton.textContent;
+    els.createFileButton.textContent = "Memproses...";
+
+    try {
+        const body = {
+            message: `feat: create new file ${fullPath}`,
+            // Content must be base64 encoded. Empty string for initial content.
+            content: btoa(""), 
+        };
+
+        const res = await fetch(
+            `https://api.github.com/repos/${config.user}/${config.repo}/contents/${fullPath}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }
+        );
+
+        if (res.status === 422) {
+            throw new Error("File sudah ada atau jalur tidak valid.");
+        }
+        if (!res.ok) {
+            throw new Error(`Gagal membuat file: ${res.statusText}`);
+        }
+
+        closeNewFileModal();
+        showToast(`File ${fileName} berhasil dibuat!`, "success");
+        // Refresh the file list to show the new file
+        await fetchFiles(state.currentPath); 
+
+    } catch (err) {
+        showToast(err.message, "error");
+    } finally {
+        els.createFileButton.disabled = false;
+        els.createFileButton.textContent = originalText;
+    }
+}
+
+// ==========================
+// GENCODE MODAL
+// ==========================
+function openGencodeModal() {
+    els.gencodeModal.classList.remove("hidden");
+}
+
+function closeGencodeModal() {
+    els.gencodeModal.classList.add("hidden");
 }
 
 // ==========================
