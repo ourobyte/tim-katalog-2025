@@ -59,126 +59,153 @@
         .scrollbar-hide::-webkit-scrollbar {
             display: none; /* Chrome, Safari and Opera */
         }
+
+        /* Initial state for main content to prevent flicker while splash screen loads */
+        #appContainer {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
     </style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 antialiased h-screen flex flex-col overflow-hidden transition-colors duration-200">
 
-<!-- Header -->
-<header class="h-14 bg-white dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0 z-30">
-    <div class="flex items-center gap-3">
-        <!-- Sidebar toggle button visible on small screens (lg:hidden) -->
-        <button id="sidebarToggle" class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-        <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">LearnWin</h1>
-        <!-- Repo info hidden on mobile (md:flex) -->
-        <div id="repoInfo" class="hidden md:flex items-center text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-            Loading...
+<!-- Splash Screen (Fixed, full-screen, white background, high z-index) -->
+<div id="splashScreen" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div class="flex-1 flex items-center justify-center flex-col">
+        <!-- Icon/Logo GIF Placeholder - Using placehold.co to simulate a dynamic icon -->
+        <img src="https://placehold.co/100x100/6d28d9/ffffff/gif?text=LW" 
+             alt="LearnWin Logo" 
+             class="w-24 h-24 mb-6 rounded-2xl shadow-xl animate-pulse">
+    </div>
+    <div class="w-full text-center p-6 space-y-2">
+        <!-- Footer 1: Katalog-project Dev. -->
+        <p class="text-xl font-bold text-gray-800">Katalog-project Dev.</p>
+        <!-- Footer 2: versi 1.0.0 -->
+        <p class="text-sm text-gray-500">versi 1.0.0</p>
+    </div>
+</div>
+
+<!-- Main Application Content Container -->
+<div id="appContainer" class="flex flex-col flex-1 h-full w-full">
+
+    <!-- Header -->
+    <header class="h-14 bg-white dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0 z-30">
+        <div class="flex items-center gap-3">
+            <!-- Sidebar toggle button visible on small screens (lg:hidden) -->
+            <button id="sidebarToggle" class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">LearnWin</h1>
+            <!-- Repo info hidden on mobile (md:flex) -->
+            <div id="repoInfo" class="hidden md:flex items-center text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                Loading...
+            </div>
         </div>
+
+        <div class="flex items-center gap-2">
+            <!-- NEW FILE Button -->
+            <button id="newFileBtn" onclick="openNewFileModal()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Buat File Baru">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+            
+            <!-- Settings/Auth Button -->
+            <button onclick="openSettings()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Settings / GitHub Token">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+            
+            <!-- Dark Mode Toggle -->
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400">
+                <!-- Sun Icon -->
+                <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <!-- Moon Icon -->
+                <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- Sidebar (Default hidden on mobile: -translate-x-full, visible on desktop: lg:translate-x-0) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-40 transition-transform duration-300">
+            <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center lg:hidden">
+                <h2 class="font-bold text-gray-700 dark:text-gray-200">Explorer</h2>
+                <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Breadcrumb -->
+            <div id="breadcrumb" class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 font-mono whitespace-nowrap overflow-x-auto scrollbar-hide shrink-0"></div>
+
+            <!-- File List (Scrollable) -->
+            <div id="fileList" class="flex-1 overflow-y-auto p-2 space-y-0.5">
+                <div class="text-gray-400 text-sm text-center mt-4">Loading files...</div>
+            </div>
+
+            <!-- Gencode Labs Link Button (Sticky at bottom) -->
+            <div class="p-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
+                <button onclick="window.open('https://gemini.google.com/share/fc36ef4d7a69', '_blank')" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-lg transition duration-150 transform hover:scale-[1.01]">
+                    <!-- Magic Wand Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
+                    <span>Gencode Labs</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Overlay (for mobile sidebar background) - Changed: z-30 -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 z-30 lg:hidden"></div>
+
+        <!-- Main Content (Editor) - Always full width on mobile, pushed right on desktop (lg:ml-64) -->
+        <main class="flex-1 flex flex-col min-w-0 w-full lg:ml-64 bg-gray-50 dark:bg-gray-900">
+            
+            <!-- Editor Toolbar -->
+            <div class="h-10 bg-gray-100 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <span id="currentFileName" class="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">No file selected</span>
+                    <span id="unsavedIndicator" class="hidden w-2 h-2 rounded-full bg-yellow-500"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Buttons are placed in the footer for better mobile access -->
+                </div>
+            </div>
+
+            <!-- Editor Container -->
+            <div class="flex-1 relative bg-white dark:bg-gray-900">
+                <!-- Ace Editor Hook -->
+                <div id="editor"></div>
+                
+                <!-- Iframe Preview (Hidden by default) -->
+                <iframe id="webPreview" class="absolute inset-0 w-full h-full bg-white hidden z-10" sandbox="allow-scripts allow-same-origin"></iframe>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 z-20 bg-gray-50 dark:bg-gray-900">
+                    <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <p>Select a file to edit</p>
+                </div>
+            </div>
+
+            <!-- Commit Bar (Footer) - Mobile friendly stacking (flex-col) -->
+            <div class="bg-white dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700 p-3 flex flex-col sm:flex-row gap-3 items-center shrink-0">
+                <input type="text" id="commitMessage" placeholder="Commit message (e.g. Update index.html)" class="flex-1 w-full px-3 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:outline-none focus:border-blue-500">
+                
+                <!-- View buttons group -->
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <!-- Buttons take w-1/2 on mobile, shrink on desktop (sm:w-auto) -->
+                    <button id="viewCodeBtn" class="hidden w-1/2 sm:w-auto px-4 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded shadow-sm hover:bg-blue-200 transition">View Code</button>
+                    <button id="viewWebBtn" class="hidden w-1/2 sm:w-auto px-4 py-1.5 text-sm font-semibold text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 rounded shadow-sm hover:bg-green-200 transition">Live Web</button>
+                </div>
+
+                <button id="commitBtn" class="w-full sm:w-auto px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2" disabled>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span>Commit Changes</span>
+                </button>
+            </div>
+        </main>
     </div>
 
-    <div class="flex items-center gap-2">
-        <!-- NEW FILE Button -->
-        <button id="newFileBtn" onclick="openNewFileModal()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Buat File Baru">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        </button>
-        
-        <!-- Settings/Auth Button -->
-        <button onclick="openSettings()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400" title="Settings / GitHub Token">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        </button>
-        
-        <!-- Dark Mode Toggle -->
-        <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400">
-            <!-- Sun Icon -->
-            <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            <!-- Moon Icon -->
-            <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-        </button>
-    </div>
-</header>
-
-<!-- Main Layout -->
-<div class="flex flex-1 overflow-hidden relative">
-
-    <!-- Sidebar (Default hidden on mobile: -translate-x-full, visible on desktop: lg:translate-x-0) -->
-    <!-- Changed: Added fixed positioning for better mobile overlay stacking -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-40 transition-transform duration-300">
-        <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center lg:hidden">
-            <h2 class="font-bold text-gray-700 dark:text-gray-200">Explorer</h2>
-            <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        
-        <!-- Breadcrumb -->
-        <div id="breadcrumb" class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 font-mono whitespace-nowrap overflow-x-auto scrollbar-hide shrink-0"></div>
-
-        <!-- File List (Scrollable) -->
-        <div id="fileList" class="flex-1 overflow-y-auto p-2 space-y-0.5">
-            <div class="text-gray-400 text-sm text-center mt-4">Loading files...</div>
-        </div>
-
-        <!-- Gencode Labs Link Button (Sticky at bottom) -->
-        <div class="p-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
-            <button onclick="window.open('https://gemini.google.com/share/fc36ef4d7a69', '_blank')" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-lg transition duration-150 transform hover:scale-[1.01]">
-                <!-- Magic Wand Icon -->
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 2.286A4 4 0 0115 7.5V13h-2.586l-2.286 2.286A4 4 0 017.5 17H5v-2.586l2.286-2.286A4 4 0 019 7.5V5h2.586l2.286-2.286z"></path></svg>
-                <span>Gencode Labs</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Overlay (for mobile sidebar background) - Changed: z-30 -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 z-30 lg:hidden"></div>
-
-    <!-- Main Content (Editor) - Always full width on mobile, pushed right on desktop (lg:ml-64) -->
-    <main class="flex-1 flex flex-col min-w-0 w-full lg:ml-64 bg-gray-50 dark:bg-gray-900">
-        
-        <!-- Editor Toolbar -->
-        <div class="h-10 bg-gray-100 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 shrink-0">
-            <div class="flex items-center gap-2 overflow-hidden">
-                <span id="currentFileName" class="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">No file selected</span>
-                <span id="unsavedIndicator" class="hidden w-2 h-2 rounded-full bg-yellow-500"></span>
-            </div>
-            <div class="flex items-center gap-2">
-                <!-- Buttons are placed in the footer for better mobile access -->
-            </div>
-        </div>
-
-        <!-- Editor Container -->
-        <div class="flex-1 relative bg-white dark:bg-gray-900">
-            <!-- Ace Editor Hook -->
-            <div id="editor"></div>
-            
-            <!-- Iframe Preview (Hidden by default) -->
-            <iframe id="webPreview" class="absolute inset-0 w-full h-full bg-white hidden z-10" sandbox="allow-scripts allow-same-origin"></iframe>
-
-            <!-- Empty State -->
-            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 z-20 bg-gray-50 dark:bg-gray-900">
-                <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                <p>Select a file to edit</p>
-            </div>
-        </div>
-
-        <!-- Commit Bar (Footer) - Mobile friendly stacking (flex-col) -->
-        <div class="bg-white dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700 p-3 flex flex-col sm:flex-row gap-3 items-center shrink-0">
-            <input type="text" id="commitMessage" placeholder="Commit message (e.g. Update index.html)" class="flex-1 w-full px-3 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-800 dark:text-white focus:outline-none focus:border-blue-500">
-            
-            <!-- View buttons group -->
-            <div class="flex gap-2 w-full sm:w-auto">
-                <!-- Buttons take w-1/2 on mobile, shrink on desktop (sm:w-auto) -->
-                <button id="viewCodeBtn" class="hidden w-1/2 sm:w-auto px-4 py-1.5 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded shadow-sm hover:bg-blue-200 transition">View Code</button>
-                <button id="viewWebBtn" class="hidden w-1/2 sm:w-auto px-4 py-1.5 text-sm font-semibold text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 rounded shadow-sm hover:bg-green-200 transition">Live Web</button>
-            </div>
-
-            <button id="commitBtn" class="w-full sm:w-auto px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2" disabled>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <span>Commit Changes</span>
-            </button>
-        </div>
-    </main>
 </div>
 
 <!-- Settings Modal -->
@@ -261,19 +288,37 @@ const els = {
     newFileNameInput: document.getElementById("newFileNameInput"),
     currentDirDisplay: document.getElementById("currentDirDisplay"),
     createFileButton: document.getElementById("createFileButton"),
+    // Splash Screen Elements
+    splashScreen: document.getElementById("splashScreen"),
+    appContainer: document.getElementById("appContainer"),
 };
 
 // ==========================
 // INIT
 // ==========================
 let editor;
+const SPLASH_DURATION = 15000; // 15 seconds
 
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initEditor();
 
-    els.repoInfo.textContent = `${config.user} / ${config.repo}`;
-    fetchFiles();
+    // Start splash screen timeout
+    setTimeout(() => {
+        // 1. Start fade out transition
+        els.splashScreen.style.opacity = '0';
+        els.appContainer.style.opacity = '1';
+
+        // 2. Hide completely after transition ends (1000ms from CSS)
+        setTimeout(() => {
+            els.splashScreen.classList.add('hidden');
+        }, 1000);
+
+        // 3. Initialize the main app content (which was delayed)
+        els.repoInfo.textContent = `${config.user} / ${config.repo}`;
+        fetchFiles();
+
+    }, SPLASH_DURATION);
 });
 
 // ==========================
