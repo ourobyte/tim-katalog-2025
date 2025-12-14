@@ -230,7 +230,20 @@ FIREBASE CONFIG & INIT
 ================================ */
 
 // --- VARIABEL GLOBAL DARI CANVAS ---
-const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+// Menggunakan konfigurasi yang disediakan secara eksplisit sebagai fallback yang kuat
+const EXPLICIT_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBdeKWVI7nuzs38eofuuszGTDyfZaAtjcQ",
+    authDomain: "quiz-islam-cerdas.firebaseapp.com",
+    projectId: "quiz-islam-cerdas",
+    storageBucket: "quiz-islam-cerdas.appspot.com",
+    messagingSenderId: "1083189096470",
+    appId: "1:1083189096470:web:dedbf5bfa9966b5be60537"
+};
+
+const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
+    ? JSON.parse(__firebase_config) 
+    : EXPLICIT_FIREBASE_CONFIG; // Gunakan config eksplisit jika config Canvas gagal
+
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-quiz-app';
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
