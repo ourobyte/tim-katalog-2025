@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Islam Cerdas</title>
+<!-- Memuat Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tone.js dihapus dan diganti dengan HTML5 Audio -->
+<!-- Konfigurasi Font Inter dan Desain Dasar -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f1f5f9; /* bg-slate-100 */
+}
+/* Style untuk tombol utama dengan efek bayangan dan transisi yang halus */
+.btn-primary {
+transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.btn-primary:hover {
+transform: translateY(-1px);
+box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15);
+}
+.btn-primary:active {
+transform: translateY(1px);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* Modal background */
+.modal-bg {
+background-color: rgba(0, 0, 0, 0.7);
+}
+/* Ensure no horizontal scroll */
+html, body {
+overflow-x: hidden;
+}
+/* Custom toggle switch style */
+.toggle-switch {
+  @apply relative inline-block w-12 h-6 rounded-full cursor-pointer;
+  transition: background-color 0.4s;
+}
+.toggle-switch input {
+  @apply opacity-0 w-0 h-0;
+}
+.slider {
+  @apply absolute top-0 left-0 right-0 bottom-0 rounded-full bg-gray-300;
+  transition: .4s;
+}
+.slider:before {
+  @apply absolute content-[''] h-4 w-4 left-1 bottom-1 bg-white rounded-full;
+  transition: .4s;
+}
+input:checked + .slider {
+  @apply bg-teal-600;
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-0 sm:p-4">
+
+<!-- Splash Screen -->
+<div id="splash-screen" class="fixed inset-0 bg-teal-700 flex flex-col items-center justify-center z-50 transition-opacity duration-1000 ease-out">
+<svg class="animate-pulse w-24 h-24 text-white mb-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-11v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+</svg>
+<p class="text-white text-3xl font-bold tracking-wider">Kuis Islam Cerdas</p>
+<p class="text-white mt-2 text-md opacity-80">Uji pengetahuanmu, raih keberkahan.</p>
+</div>
+
+<!-- 2. Otentikasi Diperlukan (New Auth Screen - Google Only) -->
+<div id="auth-screen" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
+    <div class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-2xl w-full max-w-sm space-y-5">
+        <svg class="h-10 w-10 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m18-7V4a3 3 0 00-3-3H6a3 3 0 00-3 3v3"></path></svg>
+        <h2 class="text-2xl font-bold text-gray-800">Masuk Akun</h2>
+        <p class="text-center text-gray-600">Anda harus masuk dengan Google untuk mengakses aplikasi dan menyimpan skor.</p>
+        <button id="google-signin-btn" class="flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition duration-200 shadow-lg w-full">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <!-- Google Icon SVG Path -->
+                <path d="M12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875C14.8693 8.875 16.7113 10.731 17.6523 12.073L20.2483 11.229C18.6753 8.017 15.6563 4.8 12.0003 4.8Z" fill="#EA4335" />
+                <path d="M12.0003 16.325C10.0383 16.325 8.4213 15.813 7.5453 15.056L5.1503 17.451C6.8993 19.252 9.2843 20.399 12.0003 20.399C15.6563 20.399 18.6753 17.187 20.2483 13.975L17.6523 13.131C16.7113 14.473 14.8693 16.325 12.0003 16.325Z" fill="#4285F4" />
+                <path d="M4.8003 12.599C4.8003 11.666 4.9663 10.825 5.2863 10.069L2.6903 8.356C2.2613 9.299 2.0003 10.4 2.0003 11.599C2.0003 12.798 2.2613 13.9 2.6903 14.843L5.2863 13.131C4.9663 12.375 4.8003 11.534 4.8003 12.599Z" fill="#FBBC05" />
+                <path d="M12.0003 8.875C13.9623 8.875 15.5793 9.387 16.4553 10.144L18.8503 7.749C17.1013 5.948 14.7163 4.8 12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875Z" fill="#34A853" />
+            </svg>
+            Masuk dengan Google
+        </button>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-40 hidden transition-opacity duration-300">
+<div class="flex items-center space-x-3 text-white p-4 rounded-xl bg-teal-600 shadow-2xl">
+<div class="animate-spin rounded-full h-8 w-8 border-t-4 border-white"></div>
+<span class="font-semibold text-lg">Memuat...</span>
+</div>
+</div>
+
+<!-- Container Utama Aplikasi -->
+<div id="app-container" class="w-full sm:w-11/12 md:max-w-xl bg-white shadow-2xl rounded-none sm:rounded-3xl overflow-hidden min-h-screen sm:min-h-[85vh] flex flex-col opacity-0 transition-opacity duration-500 hidden">
+
+<!-- Header Aplikasi -->
+<header class="p-4 bg-teal-700 text-white shadow-lg flex justify-between items-center sticky top-0 z-10">
+<h1 class="text-2xl font-extrabold tracking-tight">QUIZ ISLAMI</h1>
+<div id="score-display" class="text-lg font-bold bg-teal-800 px-3 py-1 rounded-full shadow-inner hidden border border-teal-500">
+Skor: <span id="current-score">0</span>
+</div>
+</header>
+
+<!-- Konten Dinamis (SPA View) -->
+<main id="view-content" class="flex-grow p-4 sm:p-6 overflow-y-auto">
+<!-- Konten akan dimuat di sini oleh JavaScript -->
+</main>
+
+<!-- Footer (Tombol Kembali) -->
+<footer class="p-4 bg-gray-50 border-t border-gray-200 sticky bottom-0 z-10">
+<button id="back-button" onclick="handleBackButtonClick()"
+class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl btn-primary text-lg"
+style="display: none;">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+<path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+</svg>
+Kembali
+</button>
+</footer>
+</div>
+
+<!-- Modal Input Nama Pengguna (Digunakan sebagai Setup Username) -->
+<div id="name-input-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
+<div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-2xl text-center space-y-5 transform transition-transform duration-300 scale-100">
+<h3 class="text-2xl font-extrabold text-teal-700">Tentukan Username Anda</h3>
+<p class="text-sm text-gray-500">Username akan digunakan untuk Leaderboard dan Achievement. Wajib diisi setelah login.</p>
+<input type="text" id="username-input" placeholder="Nama Panggilan" class="w-full p-3 border-2 border-gray-300 rounded-xl focus:ring-teal-500 focus:border-teal-500 text-lg shadow-inner" maxlength="20">
+<button onclick="saveUsernameAndStart()" class="btn-primary w-full bg-teal-600 text-white p-3 rounded-xl font-bold hover:bg-teal-700 text-lg">
+Simpan Username & Lanjut
+</button>
+</div>
+</div>
+
+<!-- Modal Feedback Kuis -->
+<div id="quiz-feedback-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300 p-4">
+<div id="quiz-feedback-content" class="p-8 rounded-2xl shadow-2xl text-center space-y-4 w-64 transform transition-transform duration-300 scale-90">
+<div id="quiz-feedback-icon" class="text-7xl animate-bounce"></div>
+<p id="quiz-feedback-text" class="text-3xl font-bold"></p>
+<p class="text-base text-gray-700" id="quiz-feedback-subtext"></p>
+</div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div id="custom-confirm-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
+<div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-2xl text-center space-y-5 transform transition-transform duration-300 scale-100">
+<h3 id="confirm-title" class="text-2xl font-extrabold text-gray-800">Konfirmasi</h3>
+<p id="confirm-message" class="text-base text-gray-600">Apakah Anda yakin ingin mengakhiri sesi kuis ini?</p>
+<div class="flex justify-around space-x-3 mt-5">
+<button id="confirm-cancel-btn" class="btn-primary w-1/2 bg-gray-400 text-white p-3 rounded-xl font-bold hover:bg-gray-500 text-lg">
+Batal
+</button>
+<button id="confirm-ok-btn" class="btn-primary w-1/2 bg-red-600 text-white p-3 rounded-xl font-bold hover:bg-red-700 text-lg">
+Ya, Akhiri & Simpan
+</button>
+</div>
+</div>
+</div>
+
+<!-- Custom Error/Alert Modal (NEW) -->
+<div id="alert-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
+    <div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-2xl text-center space-y-5 transform transition-transform duration-300 scale-100 border-4 border-red-500">
+        <h3 id="alert-title" class="text-2xl font-extrabold text-red-700">Peringatan!</h3>
+        <p id="alert-message" class="text-base text-gray-600"></p>
+        <button onclick="document.getElementById('alert-modal').classList.add('hidden')" class="btn-primary w-full bg-teal-600 text-white p-3 rounded-xl font-bold hover:bg-teal-700 text-lg">
+            Mengerti
+        </button>
+    </div>
+</div>
+
+<script type="module">
+
+/* ===============================
+FIREBASE IMPORTS
+================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { 
+getAuth, 
+signInWithCustomToken, 
+onAuthStateChanged,
+GoogleAuthProvider,
+signInWithPopup,
+signOut
+// setLogLevel REMOVED from firebase-auth.js
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { 
+getFirestore, 
+collection, 
+getDocs, 
+doc, 
+setDoc,
+getDoc,
+query,
+where,
+setLogLevel // CORRECT LOCATION for setLogLevel in modular Firestore
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// --- DATA KUIS ---
+const ALL_QUESTIONS = [
+// Fikih Umum (FIKIH)
+{ topic: "FIKIH", question: "Apakah syarat wajib shalat yang berkaitan dengan waktu?", options: ["Suci dari hadats", "Menghadap kiblat", "Masuk waktu shalat", "Berakal sehat"], correctAnswer: "Masuk waktu shalat" },
+{ topic: "FIKIH", question: "Berapa kali kita diwajibkan melakukan ruku' dalam setiap raka'at shalat?", options: ["Satu kali", "Dua kali", "Tiga kali", "Empat kali"], correctAnswer: "Satu kali" },
+{ topic: "FIKIH", question: "Hal yang membatalkan wudhu selain buang air, apa?", options: ["Tidur", "Makan dan minum", "Berbicara keras", "Melihat aurat"], correctAnswer: "Tidur" },
+// Tauhid (TAUHID)
+{ topic: "TAUHID", question: "Allah Maha Esa, tidak beranak dan tidak diperanakkan. Konsep ini disebut?", options: ["Asmaul Husna", "Tawakal", "Tauhid", "Syirik"], correctAnswer: "Tauhid" },
+{ topic: "TAUHID", question: "Percaya bahwa ada Tuhan selain Allah adalah perbuatan?", options: ["Khilaf", "Bid'ah", "Syirik", "Makruh"], correctAnswer: "Syirik" },
+{ topic: "TAUHID", question: "Apa arti dari Asmaul Husna Al-Quddus?", options: ["Maha Pengampun", "Maha Suci", "Maha Pemberi Rezeki", "Maha Mendengar"], correctAnswer: "Maha Suci" },
+// Nahwu (NAHWU)
+{ topic: "NAHWU", question: "Dalam ilmu Nahwu, kalimat (kata) dalam Bahasa Arab dibagi menjadi 3, yaitu Isim, Fi'il, dan...", options: ["Harf", "Mubtada", "Khobar", "Fa'il"], correctAnswer: "Harf" },
+{ topic: "NAHWU", question: "Status kata dalam kalimat yang ditandai dengan dhommah disebut?", options: ["Nashob", "Jer", "Jazm", "Rofa'",], correctAnswer: "Rofa'" },
+{ topic: "NAHWU", question: "Kata yang menunjukkan pekerjaan yang telah selesai disebut?", options: ["Fi'il Mudhori'", "Fi'il Amar", "Fi'il Madhi", "Isim Fa'il"], correctAnswer: "Fi'il Madhi" },
+// Shorof (SHOROF)
+{ topic: "SHOROF", question: "Ilmu Shorof mempelajari perubahan bentuk kata, seperti dari Fi'il Madhi ke Fi'il Mudhori'. Contoh 'Kataba' (Fi'il Madhi) menjadi...", options: ["Yajlisu", "Yaftahu", "Yaktubu", "Yas'alu"], correctAnswer: "Yaktubu" },
+{ topic: "SHOROF", question: "Wazan (pola) kata 'Faa'ilun' merupakan bentuk kata benda yang menunjukkan...", options: ["Objek pekerjaan", "Pelaku pekerjaan", "Tempat pekerjaan", "Waktu pekerjaan"], correctAnswer: "Pelaku pekerjaan" },
+{ topic: "SHOROF", question: "Kata 'Masjidun' (tempat sujud) merupakan contoh dari Isim...", options: ["Mashdar", "Zaman", "Makan", "Alat"], correctAnswer: "Makan" },
+// Tafsir Jalalain (TAFSIR)
+{ topic: "TAFSIR", question: "Siapakah dua ulama yang menyusun Tafsir Jalalain?", options: ["Imam Syafi'i dan Imam Hambali", "Imam Malik dan Imam Hanafi", "Jalaluddin Al-Mahalli dan Jalaluddin As-Suyuthi", "Ibnu Katsir dan Ath-Thabari"], correctAnswer: "Jalaluddin Al-Mahalli dan Jalaluddin As-Suyuthi" },
+{ topic: "TAFSIR", question: "Tafsir Jalalain terkenal dengan gaya bahasanya yang...", options: ["Panjang dan mendalam", "Ringkas dan padat", "Filosofis", "Puitis"], correctAnswer: "Ringkas dan padat" },
+{ topic: "TAFSIR", question: "Tujuan utama Tafsir Jalalain adalah untuk memudahkan pemahaman terhadap...", options: ["Hadits", "Al-Qur'an", "Sirah Nabawiyah", "Fikih"], correctAnswer: "Al-Qur'an" },
+// Umum (Semua mode Nonstop)
+{ topic: "UMUM", question: "Siapakah nabi pertama yang diciptakan Allah SWT?", options: ["Nabi Nuh A.S.", "Nabi Ibrahim A.S.", "Nabi Adam A.S.", "Nabi Muhammad S.A.W."], correctAnswer: "Nabi Adam A.S." },
+{ topic: "UMUM", question: "Berapa jumlah raka'at dalam shalat fardhu Shubuh?", options: ["Tiga (3)", "Dua (2)", "Empat (4)", "Satu (1)"], correctAnswer: "Dua (2)" },
+{ topic: "UMUM", question: "Apakah rukun Islam yang wajib dilaksanakan umat Muslim selama bulan Ramadhan?", options: ["Zakat", "Haji", "Puasa", "Shalat"], correctAnswer: "Puasa" },
+{ topic: "UMUM", question: "Siapakah Malaikat yang bertugas menyampaikan wahyu?", options: ["Malaikat Mikail", "Malaikat Jibril", "Malaikat Israfil", "Malaikat Izrail"], correctAnswer: "Malaikat Jibril" },
+{ topic: "UMUM", question: "Kitab suci Al-Qur'an diturunkan kepada Nabi?", options: ["Nabi Isa A.S.", "Nabi Musa A.S.", "Nabi Ibrahim A.S.", "Nabi Muhammad S.A.W."], correctAnswer: "Nabi Muhammad S.A.W." },
+];
+
+// Daftar lengkap pertanyaan untuk mode nonstop (gabungan semua topic)
+const NONSTOP_QUESTIONS = ALL_QUESTIONS;
+
+// Daftar Achievement
+const ACHIEVEMENTS = [
+{ id: 'HM_I', name: 'Headmachine I', criteria: 'Jawaban Benar Beruntun', value: 15, unit: 'soal', icon: '🧠', category: 'HEADMACHINE' },
+{ id: 'HM_II', name: 'Headmachine II', criteria: 'Jawaban Benar Beruntun', value: 30, unit: 'soal', icon: '🤖', category: 'HEADMACHINE' },
+{ id: 'HM_III', name: 'Headmachine III', criteria: 'Jawaban Benar Beruntun', value: 60, unit: 'soal', icon: '✨', category: 'HEADMACHINE' },
+{ id: 'HM_IV', name: 'Headmachine IV', criteria: 'Jawaban Benar Beruntun', value: 120, unit: 'soal', icon: '👑', category: 'HEADMACHINE' },
+{ id: 'HW_I', name: 'Hardworker I', criteria: 'Skor Tertinggi Sepanjang Masa', value: 100, unit: 'poin', icon: '💪', category: 'HARDWORKER' },
+{ id: 'HW_II', name: 'Hardworker II', criteria: 'Skor Tertinggi Sepanjang Masa', value: 200, unit: 'poin', icon: '🌟', category: 'HARDWORKER' },
+{ id: 'HW_III', name: 'Hardworker III', criteria: 'Skor Tertinggi Sepanjang Masa', value: 400, unit: 'poin', icon: '🔥', category: 'HARDWORKER' },
+{ id: 'HW_IV', name: 'Hardworker IV', criteria: 'Skor Tertinggi Sepanjang Masa', value: 800, unit: 'poin', icon: '🚀', category: 'HARDWORKER' },
+];
+
+/* ===============================
+FIREBASE CONFIG & INIT
+================================ */
+
+// --- VARIABEL GLOBAL DARI CANVAS ---
+// Menggunakan konfigurasi yang disediakan secara eksplisit sebagai fallback yang kuat
+const EXPLICIT_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBdeKWVI7nuzs38eofuuszGTDyfZaAtjcQ",
+    authDomain: "quiz-islam-cerdas.firebaseapp.com",
+    projectId: "quiz-islam-cerdas",
+    storageBucket: "quiz-islam-cerdas.appspot.com",
+    messagingSenderId: "1083189096470",
+    appId: "1:1083189096470:web:dedbf5bfa9966b5be60537"
+};
+
+const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
+    ? JSON.parse(__firebase_config) 
+    : EXPLICIT_FIREBASE_CONFIG; // Gunakan config eksplisit jika config Canvas gagal
+
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-quiz-app';
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// --- STATE APLIKASI (SPA) ---
+const appState = {
+currentView: 'menu',
+score: 0,
+currentQuestion: null,
+isAnswerLocked: false,
+previousView: 'menu',
+
+userName: '',
+
+// New Quiz State
+quizMode: 'nonstop',
+practiceTopic: null,
+
+// Achievement Tracking State
+currentConsecutiveCorrect: 0,
+maxConsecutiveCorrect: 0,
+highestScoreEver: 0,
+unlockedRewards: [],
+
+// Audio State
+isSfxEnabled: true,  // Default ON
+isMusicEnabled: true, // Default ON
+
+// Firebase State
+db: null,
+auth: null,
+userId: null,
+isAuthReady: false,
+};
+
+// Fungsi untuk mendapatkan path dokumen profil pengguna (PUBLIC)
+const getUserProfileDocRef = (uid) => doc(appState.db, `artifacts/${appId}/public/data/userProfiles`, uid);
+const getUserProfilesCollectionRef = () => collection(appState.db, `artifacts/${appId}/public/data/userProfiles`); // NEW: Collection Ref
+
+// Fungsi untuk menampilkan custom alert
+function showAlert(title, message) {
+    document.getElementById('alert-title').textContent = title;
+    document.getElementById('alert-message').textContent = message;
+    document.getElementById('alert-modal').classList.remove('hidden');
+}
+
+
+async function initFirebase() {
+    // Aktifkan logging debug untuk membantu diagnosa
+    setLogLevel('Debug');
+
+    try {
+        const app = initializeApp(firebaseConfig);
+        appState.db = getFirestore(app);
+        appState.auth = getAuth(app);
+        console.log("Firebase App Initialized.");
+
+        // 1. Sign In menggunakan Custom Token (dari Canvas)
+        if (initialAuthToken) {
+            console.log("Attempting sign-in with Canvas Custom Token...");
+            await signInWithCustomToken(appState.auth, initialAuthToken).catch(e => {
+                 console.warn("Custom Token Sign-In failed, continuing to wait for Google Auth:", e);
+                 // Tidak melakukan apa-apa, biarkan onAuthStateChanged menangani status null
+            });
+        }
+
+        // 2. Pasang listener status otentikasi
+        onAuthStateChanged(appState.auth, async (user) => {
+            appState.isAuthReady = true;
+
+            // Sembunyikan splash screen segera setelah status auth diketahui
+            hideSplash();
+
+            if (user) {
+                appState.userId = user.uid;
+                
+                // Pastikan user BUKAN anonim. Jika ya, paksa logout agar user login Google.
+                if (user.isAnonymous) {
+                     console.log("[AUTH LOG] Sesi anonim terdeteksi. Memaksa logout untuk Google Sign-In.");
+                     await signOut(appState.auth);
+                     // onAuthStateChanged akan dipicu lagi, user akan null, dan auth-screen akan muncul.
+                     return;
+                }
+                
+                console.log(`[AUTH SUCCESS] User Logged In. UID: ${user.uid}, Email: ${user.email}`);
+                
+                // Muat achievement/profil setelah auth siap
+                await loadAchievements(); 
+
+                // Jika login non-anonim (Google/Custom)
+                await trackUserProfile(user.uid);
+                
+            } else {
+                console.log("[AUTH NULL] No user found. Showing Auth Screen.");
+                appState.userId = null;
+                appState.userName = '';
+                // Jika user tidak terotentikasi, tampilkan layar auth
+                showScreen('auth-screen');
+            }
+        });
+
+    } catch (e) {
+        console.error("Kesalahan inisialisasi Firebase:", e);
+        // Fallback untuk menampilkan layar auth jika inisialisasi gagal
+        setTimeout(() => {
+            hideSplash();
+            showScreen('auth-screen');
+            showAlert("Kesalahan Inisialisasi", `Gagal inisialisasi Firebase: ${e.message}`);
+        }, 1500);
+    }
+}
+
+// --- NEW: USER PROFILE TRACKING & ROUTING ---
+async function trackUserProfile(uid) {
+    const profileRef = getUserProfileDocRef(uid);
+    try {
+        const docSnap = await getDoc(profileRef);
+
+        if (docSnap.exists() && docSnap.data().username) {
+            const data = docSnap.data();
+            appState.userName = data.username;
+            console.log("[PROFILE] User Profile Ditemukan. Menampilkan aplikasi utama.");
+            showScreen('app-container');
+            renderApp();
+        } else {
+            console.log("[PROFILE] User Profile Belum Lengkap. Meminta Username.");
+            // Tampilkan modal setup username
+            showScreen('name-input-modal');
+            usernameInput.focus();
+        }
+    } catch (e) {
+        console.error("Error tracking user profile:", e);
+        showAlert("Gagal Memuat Profil", "Gagal memuat profil pengguna. Cek koneksi Anda.");
+        showScreen('auth-screen');
+    }
+}
+
+
+/* ===============================
+DOM Elements & UTILITIES
+================================ */
+
+// DOM Elements (sudah ada)
+const appContainer = document.getElementById('app-container');
+const viewContent = document.getElementById('view-content');
+const backButton = document.getElementById('back-button');
+const scoreDisplay = document.getElementById('score-display');
+const currentScoreSpan = document.getElementById('current-score');
+const splashScreen = document.getElementById('splash-screen');
+const loadingOverlay = document.getElementById('loading-overlay');
+const nameInputModal = document.getElementById('name-input-modal');
+const usernameInput = document.getElementById('username-input');
+const quizModal = document.getElementById('quiz-feedback-modal');
+const customConfirmModal = document.getElementById('custom-confirm-modal');
+const confirmTitle = document.getElementById('confirm-title');
+const confirmMessage = document.getElementById('confirm-message');
+const confirmOkBtn = document.getElementById('confirm-ok-btn');
+const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+
+// --- NEW: SCREEN ROUTING ---
+/**
+* Menampilkan layar utama aplikasi yang berbeda.
+*/
+function showScreen(screenId) {
+    const screens = {
+        'splash-screen': splashScreen,
+        'auth-screen': document.getElementById('auth-screen'),
+        'name-input-modal': nameInputModal,
+        'app-container': appContainer,
+        'alert-modal': document.getElementById('alert-modal')
+    };
+
+    // Hide the alert modal explicitly first, unless it is the target screen
+    if (screenId !== 'alert-modal') {
+        document.getElementById('alert-modal').classList.add('hidden');
+    }
+
+    // Show only the target screen, hide all others
+    for (const id in screens) {
+        if (screens[id]) {
+            if (id === screenId) {
+                screens[id].classList.remove('hidden', 'opacity-0');
+                if (id === 'app-container') screens[id].classList.add('opacity-100');
+                if (id === 'name-input-modal') screens[id].classList.add('flex'); // Ensure it is flex for modal overlay
+            } else {
+                screens[id].classList.add('hidden');
+                screens[id].classList.remove('flex');
+                if (id === 'app-container') screens[id].classList.remove('opacity-100');
+            }
+        }
+    }
+}
+
+
+// --- CUSTOM CONFIRM MODAL FUNCTIONS (sama seperti sebelumnya) ---
+
+/**
+* Menampilkan modal konfirmasi kustom.
+*/
+function showCustomConfirm({ title, message, okText, onConfirm }) {
+confirmTitle.textContent = title;
+confirmMessage.textContent = message;
+confirmOkBtn.textContent = okText;
+confirmOkBtn.classList.toggle('bg-red-600', appState.quizMode === 'nonstop');
+confirmOkBtn.classList.toggle('bg-teal-600', appState.quizMode === 'practice');
+
+// Reset previous listeners
+confirmOkBtn.onclick = null;
+confirmCancelBtn.onclick = null;
+
+// Set new listeners
+confirmOkBtn.onclick = () => {
+hideCustomConfirm();
+onConfirm();
+};
+
+confirmCancelBtn.onclick = () => {
+hideCustomConfirm();
+};
+
+customConfirmModal.classList.remove('hidden');
+}
+
+function hideCustomConfirm() {
+customConfirmModal.classList.add('hidden');
+}
+
+
+/* ===============================
+HTML5 AUDIO SETUP & CONTROLS
+================================ */
+
+let clickAudio, correctAudio, wrongAudio, rewardAudio, backgroundMusic;
+const SFX_VOLUME = 0.5; // SFX volume (0.0 to 1.0)
+const MUSIC_VOLUME = 0.2; // Music volume (0.0 to 1.0)
+
+function setupAudio() {
+    // Inisialisasi Audio Elements
+    clickAudio = new Audio('discord-join.mp3');
+    correctAudio = new Audio('true-sound-effect.mp3');
+    wrongAudio = new Audio('extremely-loud-incorrect-buzzer.mp3');
+    rewardAudio = new Audio('roblox-reward-sound.mp3');
+    backgroundMusic = new Audio('audio_636e6bd554.mp3');
+
+    // Set volume dan loop
+    clickAudio.volume = SFX_VOLUME;
+    correctAudio.volume = SFX_VOLUME;
+    wrongAudio.volume = SFX_VOLUME;
+    rewardAudio.volume = SFX_VOLUME;
+
+    backgroundMusic.volume = MUSIC_VOLUME;
+    backgroundMusic.loop = true;
+    backgroundMusic.preload = 'auto';
+
+    // Terapkan state awal (dari LocalStorage)
+    updateAudioControls();
+}
+
+// Fungsi global untuk mengontrol Music ON/OFF
+window.toggleMusic = function() {
+    appState.isMusicEnabled = !appState.isMusicEnabled;
+    localStorage.setItem('isMusicEnabled', appState.isMusicEnabled);
+    updateAudioControls();
+    renderApp(); // Render ulang Opsi
+}
+
+// Fungsi global untuk mengontrol SFX ON/OFF
+window.toggleSfx = function() {
+    appState.isSfxEnabled = !appState.isSfxEnabled;
+    localStorage.setItem('isSfxEnabled', appState.isSfxEnabled);
+    updateAudioControls();
+    renderApp(); // Render ulang Opsi
+}
+
+function updateAudioControls() {
+    // Kontrol Musik
+    backgroundMusic.muted = !appState.isMusicEnabled;
+    if (appState.isMusicEnabled) {
+        // Coba putar musik, meskipun mungkin memerlukan interaksi user pertama
+        backgroundMusic.play().catch(e => console.log("Music play blocked:", e));
+    } else {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+    }
+}
+
+// Memuat preferensi Audio dari LocalStorage
+function loadAudioSettings() {
+    const sfx = localStorage.getItem('isSfxEnabled');
+    const music = localStorage.getItem('isMusicEnabled');
+    if (sfx !== null) appState.isSfxEnabled = sfx === 'true';
+    if (music !== null) appState.isMusicEnabled = music === 'true';
+}
+
+/**
+ * Memainkan suara SFX dengan mengkloning elemen audio agar tidak terpotong.
+ */
+function playSfx(audioElement) {
+    if (!appState.isSfxEnabled || !audioElement) return;
+
+    // Kloning elemen audio untuk memungkinkan banyak pemutaran cepat (seperti klik)
+    const clone = audioElement.cloneNode();
+    clone.volume = audioElement.volume; // Pertahankan volume
+    
+    // Pastikan pemutaran dimulai dari awal
+    clone.currentTime = 0;
+    clone.play().catch(e => console.log("SFX play blocked:", e));
+}
+
+
+function playClick() {
+    playSfx(clickAudio);
+}
+
+function playCorrect() {
+    playSfx(correctAudio);
+}
+
+function playWrong() {
+    playSfx(wrongAudio);
+}
+
+function playReward() {
+    playSfx(rewardAudio);
+}
+
+// --- SPLASH DAN LOADING ---
+
+function showSplash() {
+splashScreen.classList.remove('opacity-0', 'hidden');
+}
+
+function hideSplash() {
+splashScreen.classList.add('opacity-0');
+setTimeout(() => {
+splashScreen.classList.add('hidden');
+appContainer.classList.remove('opacity-0');
+appContainer.classList.add('opacity-100'); // Ensure opacity is set for main app
+}, 1000);
+}
+
+function showLoading() {
+loadingOverlay.classList.remove('hidden');
+loadingOverlay.classList.add('opacity-100');
+}
+
+function hideLoading() {
+loadingOverlay.classList.remove('opacity-100');
+loadingOverlay.classList.add('hidden');
+}
+
+// --- FUNGSI UTILITY (sama seperti sebelumnya) ---
+
+/**
+* Mengatur appState.currentQuestion ke pertanyaan acak berdasarkan mode/topik.
+*/
+function setNewRandomQuestion() {
+let questionPool = [];
+
+if (appState.quizMode === 'nonstop') {
+questionPool = NONSTOP_QUESTIONS;
+} else if (appState.quizMode === 'practice' && appState.practiceTopic) {
+questionPool = ALL_QUESTIONS.filter(q => q.topic === appState.practiceTopic);
+}
+
+if (questionPool.length === 0) {
+appState.currentQuestion = { question: "Tidak ada pertanyaan tersedia untuk mode ini.", options: [], correctAnswer: "" };
+return;
+}
+
+const randomIndex = Math.floor(Math.random() * questionPool.length);
+appState.currentQuestion = questionPool[randomIndex];
+}
+
+/* ===============================
+FIREBASE AUTH HANDLERS
+================================ */
+
+// Handle Google Sign-In
+document.getElementById('google-signin-btn').addEventListener('click', async () => {
+    // Mulai AudioContext saat interaksi pengguna pertama (untuk memastikan musik latar dimulai)
+    if (appState.isMusicEnabled) {
+        backgroundMusic.play().catch(e => console.log("Music play blocked:", e));
+    }
+    
+    console.log("Google Sign-In button clicked. Opening popup...");
+    const provider = new GoogleAuthProvider();
+    // Tambahkan prompt select_account agar user bisa memilih akun Google
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+    try {
+        await signInWithPopup(appState.auth, provider);
+        console.log("[GOOGLE AUTH] Popup Success. onAuthStateChanged should now trigger.");
+        // onAuthStateChanged akan menangani transisi layar
+    } catch (error) {
+        console.error("[GOOGLE AUTH ERROR] Kesalahan Login Google:", error);
+        showAlert("Login Gagal", `Gagal masuk dengan Google: ${error.code}. Coba lagi.`);
+    }
+});
+
+// REMOVED: Handle Anonymous Sign-In Button
+
+// Handle Sign Out
+window.handleSignOut = async function() {
+    if (appState.auth) {
+        await signOut(appState.auth);
+        console.log("[AUTH LOG] User Signed Out.");
+        // onAuthStateChanged akan mengarahkan ke auth-screen
+    }
+}
+
+
+/* ===============================
+FIREBASE LOGIC & ACHIEVEMENTS (Diadaptasi)
+================================ */
+// Menggunakan path yang disarankan: artifacts/{appId}/public/data/leaderboard
+const getLeaderboardRef = () => collection(appState.db, `artifacts/${appId}/public/data/leaderboard`);
+// Menggunakan path yang disarankan: artifacts/{appId}/public/data/achievements/{userId}
+const getAchievementsRef = () => doc(appState.db, `artifacts/${appId}/public/data/achievements`, appState.userId);
+
+
+/**
+* Memuat data pencapaian dari Firestore.
+*/
+async function loadAchievements() {
+if (!appState.db || !appState.userId) return;
+
+try {
+const docSnap = await getDoc(getAchievementsRef());
+
+if (docSnap.exists()) {
+const data = docSnap.data();
+// Ambil nama dari Achievement Profile 
+appState.userName = data.name || appState.userName;
+
+appState.maxConsecutiveCorrect = data.maxConsecutiveCorrect || 0;
+appState.highestScoreEver = data.highestScoreEver || 0;
+appState.unlockedRewards = data.unlockedRewards || [];
+}
+} catch (e) {
+console.error("Error loading achievements:", e);
+}
+}
+
+/**
+* Menyimpan skor ke koleksi 'leaderboard' (hanya mode nonstop).
+*/
+async function saveScore(name, score) {
+// Hapus pengecekan isAnonymous karena sekarang semua user harus login Google
+if (!appState.db || !appState.userId) {
+console.error("Firestore atau User ID tidak valid. Gagal menyimpan skor.");
+return;
+}
+
+// Simpan skor ke leaderboard
+const ref = doc(getLeaderboardRef(), appState.userId);
+
+try {
+console.log(`[FIRESTORE] Saving score ${score} for user ${appState.userId}...`);
+await setDoc(ref, {
+name,
+score, // Skor tertinggi yang baru saja dicapai
+userId: appState.userId,
+updatedAt: Date.now()
+});
+console.log("✅ Skor disimpan ke Leaderboard.");
+} catch (e) {
+console.error("Error setting document to Firestore: ", e);
+}
+}
+
+/**
+* Memperbarui data pencapaian (max score dan max consecutive) dan membuka reward.
+*/
+async function checkAndUnlockRewards(finalScore, consecutiveCorrect) {
+
+if (!appState.db || !appState.userId) return; // Hapus pengecekan isAnonymous
+
+const isNewHighScore = finalScore > appState.highestScoreEver;
+const isNewMaxConsecutive = consecutiveCorrect > appState.maxConsecutiveCorrect;
+
+if (!isNewHighScore && !isNewMaxConsecutive) return;
+
+appState.highestScoreEver = isNewHighScore ? finalScore : appState.highestScoreEver;
+appState.maxConsecutiveCorrect = isNewMaxConsecutive ? consecutiveCorrect : appState.maxConsecutiveCorrect;
+
+// 1. Cek dan buka reward
+let newlyUnlocked = [];
+ACHIEVEMENTS.forEach(achievement => {
+if (appState.unlockedRewards.includes(achievement.id)) return;
+
+let meetsCriteria = false;
+if (achievement.category === 'HARDWORKER' && appState.highestScoreEver >= achievement.value) {
+meetsCriteria = true;
+} else if (achievement.category === 'HEADMACHINE' && appState.maxConsecutiveCorrect >= achievement.value) {
+meetsCriteria = true;
+}
+
+if (meetsCriteria) {
+appState.unlockedRewards.push(achievement.id);
+newlyUnlocked.push(achievement.name);
+console.log(`🎉 Achievement Unlocked: ${achievement.name}`);
+}
+});
+
+// 2. Simpan status pencapaian
+const achRef = getAchievementsRef();
+try {
+console.log(`[FIRESTORE] Saving achievements for user ${appState.userId}...`);
+await setDoc(achRef, {
+name: appState.userName,
+userId: appState.userId,
+highestScoreEver: appState.highestScoreEver,
+maxConsecutiveCorrect: appState.maxConsecutiveCorrect,
+unlockedRewards: appState.unlockedRewards,
+updatedAt: Date.now()
+}, { merge: true }); // Gunakan merge agar tidak menimpa field lain
+console.log("✅ Achievements saved/updated.");
+} catch (e) {
+console.error("Error saving achievements:", e);
+}
+
+if (newlyUnlocked.length > 0) {
+// Tampilkan notifikasi reward baru
+playReward(); // <-- PLAY REWARD SOUND
+showFeedbackAndContinue(true, 0, `Anda telah membuka Achievement Baru: ${newlyUnlocked.join(', ')}!`, 'reward');
+}
+}
+
+
+/**
+* Mengambil data leaderboard dari koleksi publik dan menyortirnya.
+*/
+async function fetchLeaderboard() {
+if (!appState.db) {
+console.error("Firestore tidak siap. Tidak dapat mengambil leaderboard.");
+return [];
+}
+
+const leaderboardRef = getLeaderboardRef();
+
+try {
+console.log("[FIRESTORE] Fetching leaderboard data...");
+const snapshot = await getDocs(leaderboardRef);
+
+let scores = [];
+snapshot.forEach(doc => {
+scores.push(doc.data());
+});
+console.log(`[FIRESTORE] Fetched ${scores.length} scores.`);
+
+
+// Mengurutkan di sisi klien (memori) berdasarkan skor (descending)
+scores.sort((a, b) => b.score - a.score);
+appState.leaderboardData = scores.slice(0, 10);
+return appState.leaderboardData;
+
+} catch (e) {
+console.error("Error fetching leaderboard: ", e);
+return [];
+}
+}
+
+// --- FUNGSI NAVIGASI DAN RENDER (sama seperti sebelumnya) ---
+
+/**
+* Mengubah tampilan (view) aplikasi.
+*/
+function navigate(view) {
+playClick();
+showLoading();
+
+appState.previousView = (appState.currentView !== view && view !== 'quiz') ? appState.currentView : 'menu';
+appState.currentView = view;
+
+setTimeout(() => {
+const isQuiz = (view === 'quiz' && appState.quizMode === 'nonstop');
+backButton.style.display = (view === 'menu' || view === 'mode_select') ? 'none' : 'block';
+scoreDisplay.classList.toggle('hidden', !isQuiz);
+
+if (view === 'leaderboard') {
+renderLeaderboard();
+} else if (view === 'rewards') {
+renderRewards();
+} else {
+renderApp();
+}
+
+hideLoading();
+}, 300);
+}
+
+// FIX: Menggunakan modal konfirmasi kustom
+function handleBackButtonClick() {
+playClick();
+
+if (appState.currentView !== 'quiz') {
+// Jika bukan di kuis, kembali ke menu/view sebelumnya
+navigate(appState.previousView);
+return;
+}
+
+if (appState.quizMode === 'nonstop') {
+showCustomConfirm({
+title: "Akhiri Sesi Nonstop?",
+message: `Anda akan kembali ke menu utama. Skor Anda (${appState.score}) akan disimpan ke Leaderboard.`,
+okText: "Ya, Akhiri & Simpan",
+onConfirm: () => {
+// Logika yang dijalankan jika user mengkonfirmasi
+if (appState.score > 0 && appState.userName) { // Hapus pengecekan isAnonymous
+saveScore(appState.userName, appState.score);
+checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
+}
+appState.currentConsecutiveCorrect = 0; // Reset streak
+navigate('menu');
+}
+});
+} else if (appState.quizMode === 'practice') {
+showCustomConfirm({
+title: "Akhiri Sesi Latihan?",
+message: `Anda akan kembali ke menu utama. Progres latihan tidak memengaruhi Skor Global.`,
+okText: "Ya, Akhiri Latihan",
+onConfirm: () => {
+appState.currentConsecutiveCorrect = 0; // Reset streak
+navigate('mode_select');
+}
+});
+}
+}
+
+
+function renderApp() {
+viewContent.innerHTML = '';
+
+switch (appState.currentView) {
+case 'menu':
+viewContent.innerHTML = renderMenu();
+// Memulai musik latar jika diaktifkan saat di menu utama
+if (appState.isMusicEnabled) {
+    backgroundMusic.play().catch(e => console.log("Music play blocked:", e));
+}
+break;
+case 'mode_select':
+viewContent.innerHTML = renderPracticeModeSelection();
+break;
+case 'quiz':
+renderQuiz();
+break;
+case 'options':
+viewContent.innerHTML = renderOptions();
+break;
+case 'about':
+viewContent.innerHTML = renderAbout();
+break;
+case 'leaderboard':
+case 'rewards':
+// Leaderboard dan rewards dirender oleh fungsi terpisah
+break;
+default:
+viewContent.innerHTML = renderMenu();
+}
+}
+
+// --- FUNGSI GAME BARU (sama seperti sebelumnya) ---
+
+function startGame(mode, topic = null) {
+// Reset game state
+appState.quizMode = mode;
+appState.practiceTopic = topic;
+
+// Skor dan streak hanya relevan untuk mode nonstop
+if (mode === 'nonstop') {
+appState.score = 0;
+currentScoreSpan.textContent = '0';
+}
+// Streak direset di akhir/awal game
+appState.currentConsecutiveCorrect = 0;
+appState.isAnswerLocked = false;
+
+setNewRandomQuestion();
+
+navigate('quiz');
+}
+
+/**
+* Menampilkan modal feedback dan menentukan apakah akan lanjut atau keluar.
+*/
+function showFeedbackAndContinue(isCorrect, scoreChange, subtextOverride = null, type = 'quiz') {
+const quizModalContent = document.getElementById('quiz-feedback-content');
+const quizModalIcon = document.getElementById('quiz-feedback-icon');
+const quizModalText = document.getElementById('quiz-feedback-text');
+const quizModalSubtext = document.getElementById('quiz-feedback-subtext');
+
+quizModal.classList.remove('hidden');
+setTimeout(() => {
+quizModal.classList.remove('opacity-0');
+quizModalContent.classList.remove('scale-90');
+quizModalContent.classList.add('scale-100');
+}, 10);
+
+viewContent.style.opacity = 0;
+scoreDisplay.style.opacity = 0;
+
+if (type === 'reward') {
+// playReward() dipanggil di checkAndUnlockRewards
+quizModalIcon.innerHTML = '🎁';
+quizModalText.textContent = 'SELAMAT!';
+quizModalSubtext.textContent = subtextOverride;
+quizModalContent.className = 'bg-amber-50 text-amber-800 p-8 rounded-2xl shadow-2xl text-center space-y-4 w-64 transform transition-transform duration-300 border-4 border-amber-300';
+} else if (isCorrect) {
+playCorrect();
+quizModalIcon.innerHTML = '✨';
+quizModalText.textContent = 'BENAR!';
+quizModalSubtext.textContent = `Poin bertambah: +${scoreChange} | Beruntun: ${appState.currentConsecutiveCorrect}`;
+quizModalContent.className = 'bg-green-50 text-green-800 p-8 rounded-2xl shadow-2xl text-center space-y-4 w-64 transform transition-transform duration-300 border-4 border-green-300';
+} else {
+playWrong();
+quizModalIcon.innerHTML = '💔';
+quizModalText.textContent = 'SALAH!';
+quizModalSubtext.textContent = `Skor akhir: ${appState.score} (${appState.quizMode === 'nonstop' ? 'Sesi berakhir.' : 'Lanjut latihan.'})`;
+quizModalContent.className = 'bg-red-50 text-red-800 p-8 rounded-2xl shadow-2xl text-center space-y-4 w-64 transform transition-transform duration-300 border-4 border-red-300';
+}
+
+// Logika untuk melanjutkan atau keluar setelah 1.8 detik
+setTimeout(() => {
+quizModal.classList.add('opacity-0');
+quizModalContent.classList.remove('scale-100');
+quizModalContent.classList.add('scale-90');
+
+setTimeout(() => {
+quizModal.classList.add('hidden');
+viewContent.style.opacity = 1;
+scoreDisplay.style.opacity = 1;
+
+if (type === 'reward') {
+// Jika tipe reward, biarkan user di view yang sama
+} else if (isCorrect || appState.quizMode === 'practice') {
+setNewRandomQuestion();
+renderApp();
+} else if (!isCorrect && appState.quizMode === 'nonstop') {
+if (appState.score > 0 && appState.userName) { // Hapus pengecekan isAnonymous
+saveScore(appState.userName, appState.score);
+checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
+}
+appState.currentConsecutiveCorrect = 0;
+navigate('menu');
+}
+appState.isAnswerLocked = false;
+}, 300);
+}, 1800);
+}
+
+
+// --- RENDERING VIEWS (sama seperti sebelumnya, hanya update display) ---
+
+function renderMenu() {
+const userNameDisplay = appState.userName ?
+`<p class="text-lg text-teal-600 font-bold mt-1">Halo, ${appState.userName}!</p>` : '';
+
+return `
+<div class="flex flex-col space-y-6 p-2 text-center">
+<div class="p-4 bg-teal-50 rounded-2xl shadow-inner border-b-4 border-teal-200">
+<h2 class="text-3xl font-extrabold text-gray-800 tracking-wide">MENU UTAMA</h2>
+${userNameDisplay}
+<p class="text-sm text-gray-500 mt-2">Pilih mode untuk menguji atau melatih pengetahuan Islam Anda.</p>
+</div>
+
+<div class="grid grid-cols-1 gap-4 mt-4">
+<button onclick="checkUserAndStart('nonstop')" class="btn-primary bg-teal-600 text-white p-4 rounded-2xl font-bold text-xl hover:bg-teal-700 shadow-xl flex items-center justify-center space-x-2">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 11.586V7z" clip-rule="evenodd" /></svg>
+<span>Mulai Kuis (Nonstop)</span>
+<span class="text-xs bg-white text-teal-600 px-2 py-1 rounded-full ml-2">Score Global</span>
+</button>
+
+<button onclick="navigate('mode_select')" class="btn-primary bg-blue-600 text-white p-4 rounded-2xl font-bold text-xl hover:bg-blue-700 shadow-xl flex items-center justify-center space-x-2">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 6a1 1 0 011-1h10a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /></svg>
+<span>Latihan Klasik</span>
+<span class="text-xs bg-white text-blue-600 px-2 py-1 rounded-full ml-2">Mode Bebas</span>
+</button>
+
+<button onclick="navigate('leaderboard')" class="btn-primary bg-amber-500 text-white p-4 rounded-2xl font-bold text-xl hover:bg-amber-600 shadow-xl flex items-center justify-center space-x-2">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+<span>Leaderboard Global</span>
+</button>
+
+<button onclick="navigate('rewards')" class="btn-primary bg-pink-500 text-white p-4 rounded-2xl font-bold text-xl hover:bg-pink-600 shadow-xl flex items-center justify-center space-x-2">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg>
+<span>Reward Unlocked</span>
+<span class="text-xs bg-white text-pink-600 px-2 py-1 rounded-full ml-2">${appState.unlockedRewards.length} / ${ACHIEVEMENTS.length}</span>
+</button>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+<button onclick="navigate('options')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center space-x-1">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-.171-.772-.257-1.18-.257H10c-.408 0-.799.086-1.18.257l-.01.006c-.381.171-.767.426-1.114.757L4.722 7.749A3.5 3.5 0 004 10.5v1.5a1 1 0 01-1 1H2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 011 1v1a1 1 0 001 1h1a1 1 0 001 1h12c.552 0 1-.448 1-1V5a1 1 0 00-1-1h-1a1 1 0 01-1-1V3.17zM15 6h-1.5a1 1 0 110-2H15a1 1 0 011 1v1z" clip-rule="evenodd" /></svg>
+<span>Opsi</span>
+</button>
+
+<button onclick="navigate('about')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center space-x-1">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+<span>Tentang</span>
+</button>
+</div>
+</div>
+`;
+}
+
+function renderPracticeModeSelection() {
+// ... (sama seperti sebelumnya)
+const modes = [
+{ topic: 'FIKIH', name: 'Fikih Umum', desc: 'Hukum-hukum dasar Islam dan ibadah.' },
+{ topic: 'TAUHID', name: 'Tauhid (Aqidah)', desc: 'Dasar-dasar keyakinan dan keimanan.' },
+{ topic: 'NAHWU', name: 'Nahwu', desc: 'Struktur dan kaidah kalimat Bahasa Arab.' },
+{ topic: 'SHOROF', name: 'Shorof', desc: 'Perubahan bentuk kata (Morfologi) Bahasa Arab.' },
+{ topic: 'TAFSIR', name: 'Tafsir Jalalain', desc: 'Pemahaman ringkas ayat Al-Qur\'an.' },
+];
+
+const modeButtons = modes.map(mode => `
+<button onclick="startGame('practice', '${mode.topic}')" class="btn-primary w-full text-left p-4 rounded-xl border-2 border-blue-400 bg-white hover:bg-blue-50 transition duration-150 shadow-lg">
+<h3 class="text-xl font-bold text-blue-700">${mode.name}</h3>
+<p class="text-sm text-gray-600">${mode.desc}</p>
+<p class="text-xs text-blue-500 mt-2">Mode Latihan: Pertanyaan akan terus berlanjut tanpa penilaian skor.</p>
+</button>
+`).join('');
+
+return `
+<div class="flex flex-col space-y-6">
+<h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2">Pilih Mode Latihan Klasik</h2>
+<div class="grid grid-cols-1 gap-4 mt-4">
+${modeButtons}
+</div>
+</div>
+`;
+}
+
+function renderRewards() {
+// ... (sama seperti sebelumnya)
+const achievementGroups = ACHIEVEMENTS.reduce((acc, ach) => {
+const isUnlocked = appState.unlockedRewards.includes(ach.id);
+const progress = ach.category === 'HARDWORKER' ? appState.highestScoreEver : appState.maxConsecutiveCorrect;
+const progressDisplay = `${Math.min(progress, ach.value)}/${ach.value} ${ach.unit}`;
+
+if (!acc[ach.category]) {
+acc[ach.category] = [];
+}
+
+acc[ach.category].push({
+...ach,
+isUnlocked,
+progressDisplay,
+progressPercentage: (progress / ach.value) * 100
+});
+return acc;
+}, {});
+
+let html = `
+<div class="flex flex-col space-y-6">
+<h2 class="text-2xl font-bold text-gray-800 border-b-4 border-pink-500 pb-2 text-center tracking-wide">🎁 Achievement Anda (${appState.unlockedRewards.length} dari ${ACHIEVEMENTS.length})</h2>
+<p class="text-sm text-gray-500 text-center">Skor Tertinggi: <strong class="text-teal-600">${appState.highestScoreEver}</strong> Poin | Beruntun Terlama: <strong class="text-teal-600">${appState.maxConsecutiveCorrect}</strong> Soal</p>
+`;
+
+for (const category in achievementGroups) {
+html += `
+<div class="pt-4">
+<h3 class="text-xl font-extrabold text-pink-700 mb-3 border-b border-pink-200">${category === 'HEADMACHINE' ? 'HEADMACHINE (Beruntun)' : 'HARDWORKER (Skor)'}</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+`;
+achievementGroups[category].forEach(ach => {
+const statusClass = ach.isUnlocked ? 'bg-green-50 border-green-400' : 'bg-gray-100 border-gray-300 opacity-80';
+const titleClass = ach.isUnlocked ? 'text-green-800' : 'text-gray-600';
+const icon = ach.isUnlocked ? ach.icon : '🔒';
+
+html += `
+<div class="p-4 rounded-xl shadow-md border-l-4 ${statusClass}">
+<div class="flex items-center space-x-3">
+<span class="text-3xl">${icon}</span>
+<div>
+<p class="font-bold ${titleClass}">${ach.name}</p>
+<p class="text-sm text-gray-500">${ach.criteria}: ${ach.value} ${ach.unit}</p>
+</div>
+</div>
+<div class="mt-2 text-xs">
+<p class="text-gray-700 font-medium">${ach.isUnlocked ? 'Telah Dibuka' : 'Progress: ' + ach.progressDisplay}</p>
+<div class="w-full bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
+<div class="${ach.isUnlocked ? 'bg-green-500' : 'bg-pink-500'} h-1.5 rounded-full" style="width: ${Math.min(100, ach.progressPercentage)}%"></div>
+</div>
+</div>
+</div>
+`;
+});
+html += `
+</div>
+</div>
+`;
+}
+
+html += `</div>`;
+viewContent.innerHTML = html;
+}
+
+/**
+* Cek apakah user sudah memenuhi syarat untuk mode nonstop.
+* Karena anonim sudah dihapus, fungsi ini hanya perlu cek username.
+*/
+function checkUserAndStart(mode) {
+    playClick();
+    
+    // Coba putar musik saat interaksi pertama
+    if (appState.isMusicEnabled) {
+        backgroundMusic.play().catch(e => console.log("Music play blocked:", e));
+    }
+
+    if (!appState.userId) {
+         showAlert("Login Diperlukan", "Anda harus masuk dengan Google untuk mengakses fitur ini.");
+         showScreen('auth-screen');
+         return;
+    }
+    
+    if (mode === 'nonstop') {
+        // Karena semua user yang masuk BUKAN anonim, kita hanya cek apakah username sudah ada.
+        if (!appState.userName) {
+             showScreen('name-input-modal');
+             usernameInput.focus();
+             return;
+        }
+    }
+    
+    // Lanjutkan ke game
+    if (mode === 'nonstop') {
+        startGame(mode);
+    } else if (mode === 'practice') {
+        navigate('mode_select'); // Arahkan ke pemilihan topik
+    }
+}
+
+/**
+* Menyimpan username ke Firestore dan memulai aplikasi.
+* Ditingkatkan untuk MENCEGAK DUPLIKASI USERNAME
+*/
+async function saveUsernameAndStart() {
+    const name = usernameInput.value.trim();
+    const user = appState.auth.currentUser;
+
+    if (!user) {
+        showAlert("Sesi Tidak Valid", "Terjadi kesalahan sesi. Silakan masuk kembali.");
+        nameInputModal.classList.add('hidden');
+        showScreen('auth-screen');
+        return;
+    }
+
+    if (name.length < 3 || name.length > 20) {
+        document.getElementById('feedback-message-modal')?.remove();
+        const modalBody = document.querySelector('#name-input-modal > div');
+        const feedbackDiv = document.createElement('p');
+        feedbackDiv.id = 'feedback-message-modal';
+        feedbackDiv.className = 'text-red-500 text-sm mt-2';
+        feedbackDiv.textContent = 'Nama harus antara 3 hingga 20 karakter.';
+        modalBody.appendChild(feedbackDiv);
+        return;
+    }
+    
+    showLoading(); // Tampilkan loading saat memvalidasi
+
+    // 1. Validasi Keunikan Username (NEW LOGIC)
+    const normalizedName = name.toLowerCase();
+    const usersRef = getUserProfilesCollectionRef();
+    
+    try {
+        // Query untuk mencari username yang sama
+        const q = query(usersRef, where("usernameNormalized", "==", normalizedName));
+        const snapshot = await getDocs(q);
+
+        let isDuplicate = false;
+        snapshot.forEach(doc => {
+            // Jika ada username yang cocok dan itu BUKAN dokumen user saat ini
+            if (doc.id !== user.uid) {
+                isDuplicate = true;
+            }
+        });
+
+        if (isDuplicate) {
+            hideLoading();
+            showAlert("Username Tidak Tersedia", "Username tersebut sudah digunakan oleh pengguna lain. Silakan pilih nama lain.");
+            return; // Hentikan proses
+        }
+
+        // 2. Simpan ke Firestore jika unik
+        const profileRef = getUserProfileDocRef(user.uid);
+        console.log(`[FIRESTORE] Saving profile data for UID: ${user.uid}`);
+        await setDoc(profileRef, {
+            username: name,
+            usernameNormalized: normalizedName, // Field untuk pencarian/validasi case-insensitive
+            email: user.email || 'N/A', // Memastikan email tersimpan
+            photoURL: user.photoURL || null,
+            createdAt: new Date().toISOString(),
+        }, { merge: true }); 
+
+        appState.userName = name;
+        nameInputModal.classList.add('hidden');
+        document.getElementById('feedback-message-modal')?.remove();
+        
+        // Simpan juga ke profile achievements (memastikan nama terdaftar)
+        const achRef = getAchievementsRef();
+        await setDoc(achRef, { name: name, userId: user.uid }, { merge: true });
+        
+        console.log("✅ Profile and Achievement data saved successfully to Firestore.");
+        
+        hideLoading();
+        showScreen('app-container');
+        renderApp(); // Start the app by showing the menu
+        
+    } catch (e) {
+        hideLoading();
+        console.error("Error saving/validating username:", e);
+        showAlert("Kesalahan Penyimpanan", `Gagal menyimpan username: ${e.message}`);
+    }
+}
+
+
+function renderOptions() {
+// Menambahkan kontrol SFX dan Musik
+const isGoogleUser = appState.auth && appState.auth.currentUser;
+const userEmail = appState.auth?.currentUser?.email || 'N/A';
+
+return `
+<div class="flex flex-col space-y-6">
+<h2 class="text-2xl font-bold text-gray-800 border-b-2 border-teal-500 pb-2">Pengaturan Opsi</h2>
+
+<div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+    <h3 class="text-lg font-bold text-teal-700 mb-3">Kontrol Audio</h3>
+    
+    <!-- SFX Toggle -->
+    <div class="flex justify-between items-center py-3 border-b border-gray-100">
+        <label class="block text-gray-700 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.07a1 1 0 011.234 0l6 3a1 1 0 01.383.75v6a1 1 0 01-.383.75l-6 3a1 1 0 01-1.234 0l-6-3a1 1 0 01-.383-.75v-6a1 1 0 01.383-.75l6-3zM10 16a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" /></svg>
+            Efek Suara (SFX)
+        </label>
+        <label class="toggle-switch">
+            <input type="checkbox" id="sfx-toggle" onchange="toggleSfx()" ${appState.isSfxEnabled ? 'checked' : ''}>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- Music Toggle -->
+    <div class="flex justify-between items-center pt-3">
+        <label class="block text-gray-700 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1-1H3a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1V3zM3 3h14v14H3V3z" clip-rule="evenodd" /></svg>
+            Musik Latar (BGM)
+        </label>
+        <label class="toggle-switch">
+            <input type="checkbox" id="music-toggle" onchange="toggleMusic()" ${appState.isMusicEnabled ? 'checked' : ''}>
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+<label class="block text-gray-700 font-bold mb-3 flex items-center space-x-2">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+Nama Pengguna
+</label>
+<p class="text-lg font-mono text-teal-600 bg-teal-50 p-2 rounded-lg">${appState.userName || 'Belum diatur'}</p>
+${isGoogleUser ? `
+    <p class="text-xs text-gray-500 mt-1">Email Akun Google: ${userEmail}</p>
+    <button onclick="showScreen('name-input-modal'); usernameInput.focus();" class="mt-3 text-sm text-amber-600 hover:text-amber-700 font-semibold underline">Ubah Nama</button>
+` : `<p class="text-sm text-red-500 mt-2">Anda harus masuk untuk mengelola data akun.</p>`}
+</div>
+
+${isGoogleUser ? `
+    <button onclick="handleSignOut()" class="btn-primary bg-red-600 text-white p-3 rounded-xl font-bold hover:bg-red-700 shadow-md flex items-center justify-center space-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.586 7l3.293-3.293a1 1 0 10-1.414-1.414l-4 4a1 1 0 000 1.414l4 4a1 1 0 001.414-1.414L10.586 11H17a1 1 0 100-2H10.586z" clip-rule="evenodd" /></svg>
+        <span>Keluar (Sign Out)</span>
+    </button>
+` : ''}
+
+</div>
+`;
+}
+
+function renderAbout() {
+// ... (sama seperti sebelumnya, hanya update UserID)
+return `
+<div class="flex flex-col space-y-6">
+<h2 class="text-2xl font-bold text-gray-800 border-b-2 border-teal-500 pb-2">Tentang Kuis Islam Cerdas</h2>
+<div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100 space-y-3">
+<h3 class="text-lg font-bold text-teal-700">Mode Nonstop Tantangan</h3>
+<p class="text-gray-700 font-medium">
+Jawablah soal sebanyak mungkin dengan benar untuk mengumpulkan skor. Satu jawaban salah akan mengakhiri sesi kuis Anda dan skor akan dicatat ke Leaderboard serta Achievement.
+</p>
+<h3 class="text-lg font-bold text-blue-700 mt-4">Mode Latihan Klasik</h3>
+<p class="text-gray-700 font-medium">
+Pilih topik khusus (Fikih, Tauhid, dll.) untuk berlatih. Anda akan terus maju ke pertanyaan berikutnya meskipun jawaban salah. Skor tidak akan dicatat.
+</p>
+</div>
+<div class="bg-gray-50 p-5 rounded-xl shadow-inner space-y-2">
+<h3 class="text-lg font-bold text-gray-700">Detail Teknis</h3>
+<p class="text-sm text-gray-600">Framework: HTML, Tailwind CSS, JavaScript.</p>
+<p class="text-sm text-gray-600">Data & Skor: Google Firestore.</p>
+<div class="p-2 bg-gray-200 rounded-lg break-all text-xs text-gray-800">
+<span class="font-mono font-bold text-teal-700">UserID Anda:</span> ${appState.userId || 'Loading...'}
+</div>
+</div>
+</div>
+`;
+}
+
+async function renderLeaderboard() {
+// ... (sama seperti sebelumnya)
+viewContent.innerHTML = `
+<div class="flex flex-col space-y-4">
+<h2 class="text-2xl font-bold text-gray-800 border-b-4 border-amber-500 pb-2 text-center tracking-wide">🏆 SKOR TERTINGGI 🏆</h2>
+<div id="leaderboard-list" class="space-y-3 bg-white p-4 rounded-xl shadow-2xl">
+<p class="text-center text-gray-500 py-4">Memuat data skor...</p>
+</div>
+</div>
+`;
+
+const data = await fetchLeaderboard();
+const listContainer = document.getElementById('leaderboard-list');
+listContainer.innerHTML = '';
+
+if (data.length === 0) {
+listContainer.innerHTML = `<p class="text-center text-gray-500 py-4">Belum ada data skor yang tersedia. Jadilah yang pertama!</p>`;
+return;
+}
+
+let listHtml = '';
+data.forEach((entry, index) => {
+const rank = index + 1;
+let rankVisual = '';
+let rankClass = 'text-gray-700';
+
+if (rank === 1) {
+rankVisual = '🥇';
+rankClass = 'text-yellow-600 font-extrabold text-2xl';
+} else if (rank === 2) {
+rankVisual = '🥈';
+rankClass = 'text-gray-500 font-bold text-xl';
+} else if (rank === 3) {
+rankVisual = '🥉';
+rankClass = 'text-amber-800 font-semibold text-lg';
+} else {
+rankVisual = `${rank}.`;
+rankClass = 'text-gray-500 font-medium text-lg';
+}
+
+const isCurrentUser = appState.userId === entry.userId;
+const userHighlightClass = isCurrentUser ? 'ring-2 ring-teal-500 bg-teal-50 border-teal-400' : 'border-gray-200';
+
+listHtml += `
+<div class="flex justify-between items-center p-3 rounded-xl shadow-md border ${userHighlightClass}">
+<span class="${rankClass} w-10 text-center">${rankVisual}</span>
+<span class="flex-grow font-semibold text-gray-800 truncate px-2">${entry.name} ${isCurrentUser ? '<span class="text-teal-600 font-bold text-sm">(Anda)</span>' : ''}</span>
+<span class="font-extrabold text-2xl text-teal-600">${entry.score}</span>
+</div>
+`;
+});
+listContainer.innerHTML = listHtml;
+}
+
+
+function renderQuiz() {
+// ... (sama seperti sebelumnya)
+const currentQ = appState.currentQuestion;
+if (!currentQ || currentQ.question === "Tidak ada pertanyaan tersedia untuk mode ini.") {
+viewContent.innerHTML = `<p class="text-center text-red-500 mt-10 text-xl font-bold">Tidak ada pertanyaan yang tersedia untuk topik ini.</p>`;
+return;
+}
+
+let html = `
+<div class="flex flex-col space-y-6">
+<div class="text-center p-3 bg-white rounded-xl shadow-md">
+<p class="text-sm ${appState.quizMode === 'nonstop' ? 'text-teal-600' : 'text-blue-600'} font-bold mb-1">
+${appState.quizMode === 'nonstop' ? `PERTANYAAN KE: ${appState.score/10 + 1}` : `LATIHAN: ${appState.practiceTopic}`}
+</p>
+<div class="w-full bg-gray-200 rounded-full h-2.5">
+<div class="${appState.quizMode === 'nonstop' ? 'bg-teal-600' : 'bg-blue-600'} h-2.5 rounded-full transition-all duration-500" style="width: 100%;"></div>
+</div>
+</div>
+
+<div class="${appState.quizMode === 'nonstop' ? 'bg-teal-100 border-l-8 border-teal-500' : 'bg-blue-100 border-l-8 border-blue-500'} p-6 rounded-2xl shadow-xl">
+<p class="text-xl font-extrabold text-gray-900">${currentQ.question}</p>
+</div>
+
+<div id="options-container" class="grid grid-cols-1 gap-4">
+`;
+
+currentQ.options.forEach((option, index) => {
+html += `
+<button
+class="quiz-option w-full text-left p-4 rounded-xl border-2 border-gray-300 bg-white hover:bg-teal-50 transition duration-150 font-medium text-lg shadow-md"
+data-answer="${option}"
+onclick="checkAnswer(this, '${option.replace(/'/g, "\\'")}')"
+>
+<span class="font-bold mr-2 text-teal-600">${String.fromCharCode(65 + index)}.</span> ${option}
+</button>
+`;
+});
+
+html += `
+</div>
+</div>
+`;
+
+viewContent.innerHTML = html;
+}
+
+/**
+* Memeriksa jawaban yang dipilih oleh pengguna.
+*/
+function checkAnswer(element, selectedAnswer) {
+if (appState.isAnswerLocked) return;
+appState.isAnswerLocked = true;
+
+const currentQ = appState.currentQuestion;
+const correctAnswer = currentQ.correctAnswer;
+const optionsContainer = document.getElementById('options-container');
+
+// Nonaktifkan semua tombol setelah klik
+Array.from(optionsContainer.children).forEach(btn => {
+btn.disabled = true;
+btn.classList.remove('hover:bg-teal-50');
+});
+
+const correctButton = Array.from(optionsContainer.children).find(btn => btn.dataset.answer === correctAnswer);
+
+let isCorrect = selectedAnswer === correctAnswer;
+let scoreChange = 0;
+
+if (isCorrect) {
+if (appState.quizMode === 'nonstop') {
+scoreChange = 10;
+appState.score += scoreChange;
+appState.currentConsecutiveCorrect++;
+currentScoreSpan.textContent = appState.score;
+}
+
+element.classList.remove('bg-white', 'border-gray-300');
+element.classList.add('bg-green-100', 'border-green-500', 'ring-4', 'ring-green-300', 'shadow-lg');
+} else {
+if (appState.quizMode === 'nonstop') {
+appState.currentConsecutiveCorrect = 0; // Reset streak pada kesalahan
+}
+
+element.classList.remove('bg-white', 'border-gray-300');
+element.classList.add('bg-red-100', 'border-red-500', 'ring-4', 'ring-red-300', 'shadow-lg');
+
+if (correctButton) {
+correctButton.classList.remove('bg-white', 'border-gray-300', 'bg-red-100');
+correctButton.classList.add('bg-teal-200', 'border-teal-600', 'ring-4', 'ring-teal-400', 'shadow-xl');
+}
+}
+
+// Periksa reward di sini sebelum melanjutkan
+if (appState.quizMode === 'nonstop') {
+// Karena semua user harus login Google, tidak perlu cek isAnonymous
+checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
+}
+
+showFeedbackAndContinue(isCorrect, scoreChange);
+}
+
+// --- INISIALISASI ---
+window.onload = () => {
+initFirebase();
+// Memuat setting audio sebelum setup audio agar audio settings diterapkan ke elemen Audio
+loadAudioSettings(); 
+showSplash();
+setupAudio();
+// Mulai BGM saat app dimuat (akan diputar hanya setelah interaksi pengguna pertama)
+if (appState.isMusicEnabled) {
+    backgroundMusic.play().catch(e => console.log("Initial music play blocked:", e));
+}
+};
+
+// Buat fungsi global untuk onclick
+window.navigate = navigate;
+window.startGame = startGame;
+window.checkAnswer = checkAnswer;
+window.handleBackButtonClick = handleBackButtonClick;
+window.playClick = playClick;
+window.checkUserAndStart = checkUserAndStart;
+window.saveUsernameAndStart = saveUsernameAndStart; // Diperbarui
+window.renderLeaderboard = renderLeaderboard;
+window.renderRewards = renderRewards;
+window.showAlert = showAlert; // Tambahkan ke global scope
+window.handleSignOut = handleSignOut;
+window.toggleMusic = toggleMusic; // Tambahkan ke global scope
+window.toggleSfx = toggleSfx; // Tambahkan ke global scope
+</script>
+</body>
+</html>
