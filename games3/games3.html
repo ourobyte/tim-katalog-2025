@@ -19,16 +19,16 @@ min-height: 100vh; /* Menggunakan viewport height */
 }
 /* Style untuk tombol utama dengan efek bayangan dan transisi yang halus */
 .btn-primary {
-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transisi lebih halus */
+box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam */
 }
 .btn-primary:hover {
-transform: translateY(-1px);
-box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15);
+transform: translateY(-2px); /* Efek melayang lebih terasa */
+box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 .btn-primary:active {
 transform: translateY(1px);
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 /* Modal background */
 .modal-bg {
@@ -1023,87 +1023,118 @@ appState.isAnswerLocked = false;
 }
 
 
-// --- RENDERING VIEWS (sama seperti sebelumnya, hanya update display) ---
+// --- RENDERING VIEWS (DIUBAH UNTUK TATA LETAK MOBILE BARU) ---
 
 function renderMenu() {
 const userNameDisplay = appState.userName ?
 `<p class="text-lg text-teal-600 font-bold mt-1">Halo, ${appState.userName}!</p>` : '';
 
 return `
-<div class="flex flex-col space-y-6 p-2 text-center">
-<div class="p-4 bg-teal-50 rounded-2xl shadow-inner border-b-4 border-teal-200">
-<h2 class="text-3xl font-extrabold text-gray-800 tracking-wide">MENU UTAMA</h2>
-${userNameDisplay}
-<p class="text-sm text-gray-500 mt-2">Pilih mode untuk menguji atau melatih pengetahuan Islam Anda.</p>
-</div>
+<div class="flex flex-col space-y-6 p-2 text-center h-full">
+    
+    <!-- Header/Slogan Section -->
+    <div class="p-4 bg-white rounded-2xl shadow-xl border-b-4 border-teal-500">
+        <h2 class="text-3xl font-extrabold text-gray-800 tracking-wide">PILIH MODE</h2>
+        ${userNameDisplay}
+        <p class="text-sm text-gray-500 mt-2">Uji pengetahuan dan raih pencapaian tertinggi.</p>
+    </div>
 
-<div class="grid grid-cols-1 gap-4 mt-4">
-<button onclick="checkUserAndStart('nonstop')" class="btn-primary bg-teal-600 text-white p-4 rounded-2xl font-bold text-xl hover:bg-teal-700 shadow-xl flex items-center justify-center space-x-2">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 11.586V7z" clip-rule="evenodd" /></svg>
-<span>Mulai Kuis (Nonstop)</span>
-<span class="text-xs bg-white text-teal-600 px-2 py-1 rounded-full ml-2">Score Global</span>
-</button>
+    <!-- Main Navigation Cards (Full Width Stack) -->
+    <div class="flex flex-col space-y-4 flex-grow justify-start pt-2">
 
-<button onclick="navigate('mode_select')" class="btn-primary bg-blue-600 text-white p-4 rounded-2xl font-bold text-xl hover:bg-blue-700 shadow-xl flex items-center justify-center space-x-2">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 6a1 1 0 011-1h10a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /></svg>
-<span>Latihan Klasik</span>
-<span class="text-xs bg-white text-blue-600 px-2 py-1 rounded-full ml-2">Mode Bebas</span>
-</button>
+        <!-- Kuis Nonstop Card -->
+        <button onclick="checkUserAndStart('nonstop')" class="btn-primary w-full text-left p-5 rounded-3xl bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-xl flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-teal-200" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 11.586V7z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <span class="text-xl font-extrabold block">Mulai Kuis (Nonstop)</span>
+                    <span class="text-sm opacity-90">Tantangan skor global. Salah = Tamat.</span>
+                </div>
+            </div>
+            <span class="text-xs bg-white text-teal-600 px-3 py-1 rounded-full font-bold shadow-md">SKOR</span>
+        </button>
 
-<button onclick="navigate('leaderboard')" class="btn-primary bg-amber-500 text-white p-4 rounded-2xl font-bold text-xl hover:bg-amber-600 shadow-xl flex items-center justify-center space-x-2">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-<span>Leaderboard Global</span>
-</button>
+        <!-- Latihan Klasik Card -->
+        <button onclick="navigate('mode_select')" class="btn-primary w-full text-left p-5 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-xl flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-200" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 6a1 1 0 011-1h10a1 1 0 011 1v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                </svg>
+                <div>
+                    <span class="text-xl font-extrabold block">Latihan Klasik</span>
+                    <span class="text-sm opacity-90">Pilih topik, latihan tanpa tekanan skor.</span>
+                </div>
+            </div>
+            <span class="text-xs bg-white text-blue-600 px-3 py-1 rounded-full font-bold shadow-md">BEBAS</span>
+        </button>
+        
+        <!-- Leaderboard dan Rewards (Horizontal Stack) -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Leaderboard -->
+            <button onclick="navigate('leaderboard')" class="btn-primary bg-amber-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-amber-600 shadow-xl flex flex-col items-center justify-center space-y-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                <span>Global</span>
+            </button>
 
-<button onclick="navigate('rewards')" class="btn-primary bg-pink-500 text-white p-4 rounded-2xl font-bold text-xl hover:bg-pink-600 shadow-xl flex items-center justify-center space-x-2">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg>
-<span>Reward Unlocked</span>
-<span class="text-xs bg-white text-pink-600 px-2 py-1 rounded-full ml-2">${appState.unlockedRewards.length} / ${ACHIEVEMENTS.length}</span>
-</button>
-</div>
+            <!-- Rewards -->
+            <button onclick="navigate('rewards')" class="btn-primary bg-pink-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-pink-600 shadow-xl flex flex-col items-center justify-center space-y-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg>
+                <span>Reward</span>
+                <span class="text-xs bg-white text-pink-600 px-2 rounded-full font-bold">${appState.unlockedRewards.length} / ${ACHIEVEMENTS.length}</span>
+            </button>
+        </div>
 
-<div class="grid grid-cols-2 gap-4">
-<button onclick="navigate('options')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center space-x-1">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-.171-.772-.257-1.18-.257H10c-.408 0-.799.086-1.18.257l-.01.006c-.381.171-.767.426-1.114.757L4.722 7.749A3.5 3.5 0 004 10.5v1.5a1 1 0 01-1 1H2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 011 1v1a1 1 0 001 1h1a1 1 0 001 1h12c.552 0 1-.448 1-1V5a1 1 0 00-1-1h-1a1 1 0 01-1-1V3.17zM15 6h-1.5a1 1 0 110-2H15a1 1 0 011 1v1z" clip-rule="evenodd" /></svg>
-<span>Opsi</span>
-</button>
+    </div>
 
-<button onclick="navigate('about')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center space-x-1">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-<span>Tentang</span>
-</button>
-</div>
+    <!-- Footer Options/About (Single Row) -->
+    <div class="flex justify-between space-x-4 pt-4 border-t border-gray-200">
+        <button onclick="navigate('options')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center w-1/2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-.171-.772-.257-1.18-.257H10c-.408 0-.799.086-1.18.257l-.01.006c-.381.171-.767.426-1.114.757L4.722 7.749A3.5 3.5 0 004 10.5v1.5a1 1 0 01-1 1H2a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 011 1v1a1 1 0 001 1h1a1 1 0 001 1h12c.552 0 1-.448 1-1V5a1 1 0 00-1-1h-1a1 1 0 01-1-1V3.17zM15 6h-1.5a1 1 0 110-2H15a1 1 0 011 1v1z" clip-rule="evenodd" /></svg>
+            <span>Opsi</span>
+        </button>
+
+        <button onclick="navigate('about')" class="btn-primary bg-gray-200 text-gray-700 p-3 rounded-xl font-bold hover:bg-gray-300 shadow-md flex items-center justify-center w-1/2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+            <span>Tentang</span>
+        </button>
+    </div>
 </div>
 `;
 }
 
 function renderPracticeModeSelection() {
-// ... (sama seperti sebelumnya)
+// ... (DIUBAH UNTUK TATA LETAK MOBILE BARU)
 const modes = [
-{ topic: 'FIKIH', name: 'Fikih Umum', desc: 'Hukum-hukum dasar Islam dan ibadah.' },
-{ topic: 'TAUHID', name: 'Tauhid (Aqidah)', desc: 'Dasar-dasar keyakinan dan keimanan.' },
-{ topic: 'NAHWU', name: 'Nahwu', desc: 'Struktur dan kaidah kalimat Bahasa Arab.' },
-{ topic: 'SHOROF', name: 'Shorof', desc: 'Perubahan bentuk kata (Morfologi) Bahasa Arab.' },
-{ topic: 'TAFSIR', name: 'Tafsir Jalalain', desc: 'Pemahaman ringkas ayat Al-Qur\'an.' },
+{ topic: 'FIKIH', name: 'Fikih Umum', desc: 'Hukum-hukum dasar Islam dan ibadah.', icon: '🕌' },
+{ topic: 'TAUHID', name: 'Tauhid (Aqidah)', desc: 'Dasar-dasar keyakinan dan keimanan.', icon: '🕋' },
+{ topic: 'NAHWU', name: 'Nahwu', desc: 'Struktur dan kaidah kalimat Bahasa Arab.', icon: '📝' },
+{ topic: 'SHOROF', name: 'Shorof', desc: 'Perubahan bentuk kata (Morfologi) Bahasa Arab.', icon: '🔄' },
+{ topic: 'TAFSIR', name: 'Tafsir Jalalain', desc: 'Pemahaman ringkas ayat Al-Qur\'an.', icon: '📖' },
 ];
 
 const modeButtons = modes.map(mode => `
-<button onclick="startGame('practice', '${mode.topic}')" class="btn-primary w-full text-left p-4 rounded-xl border-2 border-blue-400 bg-white hover:bg-blue-50 transition duration-150 shadow-lg">
-<h3 class="text-xl font-bold text-blue-700">${mode.name}</h3>
-<p class="text-sm text-gray-600">${mode.desc}</p>
-<p class="text-xs text-blue-500 mt-2">Mode Latihan: Pertanyaan akan terus berlanjut tanpa penilaian skor.</p>
+<button onclick="startGame('practice', '${mode.topic}')" class="btn-primary w-full text-left p-4 rounded-2xl border-2 border-blue-400 bg-white hover:bg-blue-50 transition duration-150 shadow-lg flex items-center space-x-4">
+    <span class="text-3xl">${mode.icon}</span>
+    <div class="flex-grow">
+        <h3 class="text-xl font-bold text-blue-700">${mode.name}</h3>
+        <p class="text-sm text-gray-600">${mode.desc}</p>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
 </button>
 `).join('');
 
 return `
 <div class="flex flex-col space-y-6">
-<h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2">Pilih Mode Latihan Klasik</h2>
+<h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 text-center">Pilih Topik Latihan Klasik</h2>
 <div class="grid grid-cols-1 gap-4 mt-4">
 ${modeButtons}
 </div>
 </div>
 `;
 }
+
 
 function renderRewards() {
 // ... (sama seperti sebelumnya)
