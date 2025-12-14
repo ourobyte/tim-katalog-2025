@@ -36,6 +36,28 @@ background-color: rgba(0, 0, 0, 0.7);
 html, body {
 overflow-x: hidden;
 }
+/* Custom toggle switch style */
+.toggle-switch {
+@apply relative inline-block w-12 h-6 rounded-full cursor-pointer;
+transition: background-color 0.4s;
+}
+.toggle-switch input {
+@apply opacity-0 w-0 h-0;
+}
+.slider {
+@apply absolute top-0 left-0 right-0 bottom-0 rounded-full bg-gray-300;
+transition: .4s;
+}
+.slider:before {
+@apply absolute content-[''] h-4 w-4 left-1 bottom-1 bg-white rounded-full;
+transition: .4s;
+}
+input:checked + .slider {
+@apply bg-teal-600;
+}
+input:checked + .slider:before {
+transform: translateX(24px);
+}
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-0 sm:p-4">
@@ -51,21 +73,21 @@ overflow-x: hidden;
 
 <!-- 2. Otentikasi Diperlukan (New Auth Screen - Google Only) -->
 <div id="auth-screen" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
-    <div class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-2xl w-full max-w-sm space-y-5">
-        <svg class="h-10 w-10 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m18-7V4a3 3 0 00-3-3H6a3 3 0 00-3 3v3"></path></svg>
-        <h2 class="text-2xl font-bold text-gray-800">Masuk Akun</h2>
-        <p class="text-center text-gray-600">Anda harus masuk dengan Google untuk mengakses aplikasi dan menyimpan skor.</p>
-        <button id="google-signin-btn" class="flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition duration-200 shadow-lg w-full">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <!-- Google Icon SVG Path -->
-                <path d="M12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875C14.8693 8.875 16.7113 10.731 17.6523 12.073L20.2483 11.229C18.6753 8.017 15.6563 4.8 12.0003 4.8Z" fill="#EA4335" />
-                <path d="M12.0003 16.325C10.0383 16.325 8.4213 15.813 7.5453 15.056L5.1503 17.451C6.8993 19.252 9.2843 20.399 12.0003 20.399C15.6563 20.399 18.6753 17.187 20.2483 13.975L17.6523 13.131C16.7113 14.473 14.8693 16.325 12.0003 16.325Z" fill="#4285F4" />
-                <path d="M4.8003 12.599C4.8003 11.666 4.9663 10.825 5.2863 10.069L2.6903 8.356C2.2613 9.299 2.0003 10.4 2.0003 11.599C2.0003 12.798 2.2613 13.9 2.6903 14.843L5.2863 13.131C4.9663 12.375 4.8003 11.534 4.8003 12.599Z" fill="#FBBC05" />
-                <path d="M12.0003 8.875C13.9623 8.875 15.5793 9.387 16.4553 10.144L18.8503 7.749C17.1013 5.948 14.7163 4.8 12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875Z" fill="#34A853" />
-            </svg>
-            Masuk dengan Google
-        </button>
-    </div>
+<div class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-2xl w-full max-w-sm space-y-5">
+<svg class="h-10 w-10 text-teal-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m18-7V4a3 3 0 00-3-3H6a3 3 0 00-3 3v3"></path></svg>
+<h2 class="text-2xl font-bold text-gray-800">Masuk Akun</h2>
+<p class="text-center text-gray-600">Anda harus masuk dengan Google untuk mengakses aplikasi dan menyimpan skor.</p>
+<button id="google-signin-btn" class="flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition duration-200 shadow-lg w-full">
+<svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+<!-- Google Icon SVG Path -->
+<path d="M12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875C14.8693 8.875 16.7113 10.731 17.6523 12.073L20.2483 11.229C18.6753 8.017 15.6563 4.8 12.0003 4.8Z" fill="#EA4335" />
+<path d="M12.0003 16.325C10.0383 16.325 8.4213 15.813 7.5453 15.056L5.1503 17.451C6.8993 19.252 9.2843 20.399 12.0003 20.399C15.6563 20.399 18.6753 17.187 20.2483 13.975L17.6523 13.131C16.7113 14.473 14.8693 16.325 12.0003 16.325Z" fill="#4285F4" />
+<path d="M4.8003 12.599C4.8003 11.666 4.9663 10.825 5.2863 10.069L2.6903 8.356C2.2613 9.299 2.0003 10.4 2.0003 11.599C2.0003 12.798 2.2613 13.9 2.6903 14.843L5.2863 13.131C4.9663 12.375 4.8003 11.534 4.8003 12.599Z" fill="#FBBC05" />
+<path d="M12.0003 8.875C13.9623 8.875 15.5793 9.387 16.4553 10.144L18.8503 7.749C17.1013 5.948 14.7163 4.8 12.0003 4.8C9.2843 4.8 6.8993 5.948 5.1503 7.749L7.5453 10.144C8.4213 9.387 10.0383 8.875 12.0003 8.875Z" fill="#34A853" />
+</svg>
+Masuk dengan Google
+</button>
+</div>
 </div>
 
 <!-- Loading Overlay -->
@@ -144,13 +166,13 @@ Ya, Akhiri & Simpan
 
 <!-- Custom Error/Alert Modal (NEW) -->
 <div id="alert-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
-    <div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-2xl text-center space-y-5 transform transition-transform duration-300 scale-100 border-4 border-red-500">
-        <h3 id="alert-title" class="text-2xl font-extrabold text-red-700">Peringatan!</h3>
-        <p id="alert-message" class="text-base text-gray-600"></p>
-        <button onclick="document.getElementById('alert-modal').classList.add('hidden')" class="btn-primary w-full bg-teal-600 text-white p-3 rounded-xl font-bold hover:bg-teal-700 text-lg">
-            Mengerti
-        </button>
-    </div>
+<div class="w-full max-w-sm bg-white p-6 rounded-2xl shadow-2xl text-center space-y-5 transform transition-transform duration-300 scale-100 border-4 border-red-500">
+<h3 id="alert-title" class="text-2xl font-extrabold text-red-700">Peringatan!</h3>
+<p id="alert-message" class="text-base text-gray-600"></p>
+<button onclick="document.getElementById('alert-modal').classList.add('hidden')" class="btn-primary w-full bg-teal-600 text-white p-3 rounded-xl font-bold hover:bg-teal-700 text-lg">
+Mengerti
+</button>
+</div>
 </div>
 
 <script type="module">
@@ -232,17 +254,17 @@ FIREBASE CONFIG & INIT
 // --- VARIABEL GLOBAL DARI CANVAS ---
 // Menggunakan konfigurasi yang disediakan secara eksplisit sebagai fallback yang kuat
 const EXPLICIT_FIREBASE_CONFIG = {
-    apiKey: "AIzaSyBdeKWVI7nuzs38eofuuszGTDyfZaAtjcQ",
-    authDomain: "quiz-islam-cerdas.firebaseapp.com",
-    projectId: "quiz-islam-cerdas",
-    storageBucket: "quiz-islam-cerdas.appspot.com",
-    messagingSenderId: "1083189096470",
-    appId: "1:1083189096470:web:dedbf5bfa9966b5be60537"
+apiKey: "AIzaSyBdeKWVI7nuzs38eofuuszGTDyfZaAtjcQ",
+authDomain: "quiz-islam-cerdas.firebaseapp.com",
+projectId: "quiz-islam-cerdas",
+storageBucket: "quiz-islam-cerdas.appspot.com",
+messagingSenderId: "1083189096470",
+appId: "1:1083189096470:web:dedbf5bfa9966b5be60537"
 };
 
-const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config) 
-    ? JSON.parse(__firebase_config) 
-    : EXPLICIT_FIREBASE_CONFIG; // Gunakan config eksplisit jika config Canvas gagal
+const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config)
+? JSON.parse(__firebase_config)
+: EXPLICIT_FIREBASE_CONFIG; // Gunakan config eksplisit jika config Canvas gagal
 
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-quiz-app';
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -267,6 +289,10 @@ maxConsecutiveCorrect: 0,
 highestScoreEver: 0,
 unlockedRewards: [],
 
+// Audio State
+isSfxEnabled: true, // Default ON
+isMusicEnabled: true, // Default ON
+
 // Firebase State
 db: null,
 auth: null,
@@ -280,100 +306,100 @@ const getUserProfilesCollectionRef = () => collection(appState.db, `artifacts/${
 
 // Fungsi untuk menampilkan custom alert
 function showAlert(title, message) {
-    document.getElementById('alert-title').textContent = title;
-    document.getElementById('alert-message').textContent = message;
-    document.getElementById('alert-modal').classList.remove('hidden');
+document.getElementById('alert-title').textContent = title;
+document.getElementById('alert-message').textContent = message;
+document.getElementById('alert-modal').classList.remove('hidden');
 }
 
 
 async function initFirebase() {
-    // Aktifkan logging debug untuk membantu diagnosa
-    setLogLevel('Debug');
+// Aktifkan logging debug untuk membantu diagnosa
+setLogLevel('Debug');
 
-    try {
-        const app = initializeApp(firebaseConfig);
-        appState.db = getFirestore(app);
-        appState.auth = getAuth(app);
-        console.log("Firebase App Initialized.");
+try {
+const app = initializeApp(firebaseConfig);
+appState.db = getFirestore(app);
+appState.auth = getAuth(app);
+console.log("Firebase App Initialized.");
 
-        // 1. Sign In menggunakan Custom Token (dari Canvas)
-        if (initialAuthToken) {
-            console.log("Attempting sign-in with Canvas Custom Token...");
-            await signInWithCustomToken(appState.auth, initialAuthToken).catch(e => {
-                 console.warn("Custom Token Sign-In failed, continuing to wait for Google Auth:", e);
-                 // Tidak melakukan apa-apa, biarkan onAuthStateChanged menangani status null
-            });
-        }
+// 1. Sign In menggunakan Custom Token (dari Canvas)
+if (initialAuthToken) {
+console.log("Attempting sign-in with Canvas Custom Token...");
+await signInWithCustomToken(appState.auth, initialAuthToken).catch(e => {
+console.warn("Custom Token Sign-In failed, continuing to wait for Google Auth:", e);
+// Tidak melakukan apa-apa, biarkan onAuthStateChanged menangani status null
+});
+}
 
-        // 2. Pasang listener status otentikasi
-        onAuthStateChanged(appState.auth, async (user) => {
-            appState.isAuthReady = true;
+// 2. Pasang listener status otentikasi
+onAuthStateChanged(appState.auth, async (user) => {
+appState.isAuthReady = true;
 
-            // Sembunyikan splash screen segera setelah status auth diketahui
-            hideSplash();
+// Sembunyikan splash screen segera setelah status auth diketahui
+hideSplash();
 
-            if (user) {
-                appState.userId = user.uid;
-                
-                // Pastikan user BUKAN anonim. Jika ya, paksa logout agar user login Google.
-                if (user.isAnonymous) {
-                     console.log("[AUTH LOG] Sesi anonim terdeteksi. Memaksa logout untuk Google Sign-In.");
-                     await signOut(appState.auth);
-                     // onAuthStateChanged akan dipicu lagi, user akan null, dan auth-screen akan muncul.
-                     return;
-                }
-                
-                console.log(`[AUTH SUCCESS] User Logged In. UID: ${user.uid}, Email: ${user.email}`);
-                
-                // Muat achievement/profil setelah auth siap
-                await loadAchievements(); 
+if (user) {
+appState.userId = user.uid;
 
-                // Jika login non-anonim (Google/Custom)
-                await trackUserProfile(user.uid);
-                
-            } else {
-                console.log("[AUTH NULL] No user found. Showing Auth Screen.");
-                appState.userId = null;
-                appState.userName = '';
-                // Jika user tidak terotentikasi, tampilkan layar auth
-                showScreen('auth-screen');
-            }
-        });
+// Pastikan user BUKAN anonim. Jika ya, paksa logout agar user login Google.
+if (user.isAnonymous) {
+console.log("[AUTH LOG] Sesi anonim terdeteksi. Memaksa logout untuk Google Sign-In.");
+await signOut(appState.auth);
+// onAuthStateChanged akan dipicu lagi, user akan null, dan auth-screen akan muncul.
+return;
+}
 
-    } catch (e) {
-        console.error("Kesalahan inisialisasi Firebase:", e);
-        // Fallback untuk menampilkan layar auth jika inisialisasi gagal
-        setTimeout(() => {
-            hideSplash();
-            showScreen('auth-screen');
-            showAlert("Kesalahan Inisialisasi", `Gagal inisialisasi Firebase: ${e.message}`);
-        }, 1500);
-    }
+console.log(`[AUTH SUCCESS] User Logged In. UID: ${user.uid}, Email: ${user.email}`);
+
+// Muat achievement/profil setelah auth siap
+await loadAchievements();
+
+// Jika login non-anonim (Google/Custom)
+await trackUserProfile(user.uid);
+
+} else {
+console.log("[AUTH NULL] No user found. Showing Auth Screen.");
+appState.userId = null;
+appState.userName = '';
+// Jika user tidak terotentikasi, tampilkan layar auth
+showScreen('auth-screen');
+}
+});
+
+} catch (e) {
+console.error("Kesalahan inisialisasi Firebase:", e);
+// Fallback untuk menampilkan layar auth jika inisialisasi gagal
+setTimeout(() => {
+hideSplash();
+showScreen('auth-screen');
+showAlert("Kesalahan Inisialisasi", `Gagal inisialisasi Firebase: ${e.message}`);
+}, 1500);
+}
 }
 
 // --- NEW: USER PROFILE TRACKING & ROUTING ---
 async function trackUserProfile(uid) {
-    const profileRef = getUserProfileDocRef(uid);
-    try {
-        const docSnap = await getDoc(profileRef);
+const profileRef = getUserProfileDocRef(uid);
+try {
+const docSnap = await getDoc(profileRef);
 
-        if (docSnap.exists() && docSnap.data().username) {
-            const data = docSnap.data();
-            appState.userName = data.username;
-            console.log("[PROFILE] User Profile Ditemukan. Menampilkan aplikasi utama.");
-            showScreen('app-container');
-            renderApp();
-        } else {
-            console.log("[PROFILE] User Profile Belum Lengkap. Meminta Username.");
-            // Tampilkan modal setup username
-            showScreen('name-input-modal');
-            usernameInput.focus();
-        }
-    } catch (e) {
-        console.error("Error tracking user profile:", e);
-        showAlert("Gagal Memuat Profil", "Gagal memuat profil pengguna. Cek koneksi Anda.");
-        showScreen('auth-screen');
-    }
+if (docSnap.exists() && docSnap.data().username) {
+const data = docSnap.data();
+appState.userName = data.username;
+console.log("[PROFILE] User Profile Ditemukan. Menampilkan aplikasi utama.");
+showScreen('app-container');
+renderApp();
+} else {
+console.log("[PROFILE] User Profile Belum Lengkap. Meminta Username.");
+// Tampilkan modal setup username
+showScreen('name-input-modal');
+usernameInput.focus();
+}
+} catch (e) {
+console.error("Error tracking user profile:", e);
+showAlert("Gagal Memuat Profil", "Gagal memuat profil pengguna. Cek koneksi Anda.");
+showScreen('auth-screen');
+}
 }
 
 
@@ -404,33 +430,33 @@ const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 * Menampilkan layar utama aplikasi yang berbeda.
 */
 function showScreen(screenId) {
-    const screens = {
-        'splash-screen': splashScreen,
-        'auth-screen': document.getElementById('auth-screen'),
-        'name-input-modal': nameInputModal,
-        'app-container': appContainer,
-        'alert-modal': document.getElementById('alert-modal')
-    };
+const screens = {
+'splash-screen': splashScreen,
+'auth-screen': document.getElementById('auth-screen'),
+'name-input-modal': nameInputModal,
+'app-container': appContainer,
+'alert-modal': document.getElementById('alert-modal')
+};
 
-    // Hide the alert modal explicitly first, unless it is the target screen
-    if (screenId !== 'alert-modal') {
-        document.getElementById('alert-modal').classList.add('hidden');
-    }
+// Hide the alert modal explicitly first, unless it is the target screen
+if (screenId !== 'alert-modal') {
+document.getElementById('alert-modal').classList.add('hidden');
+}
 
-    // Show only the target screen, hide all others
-    for (const id in screens) {
-        if (screens[id]) {
-            if (id === screenId) {
-                screens[id].classList.remove('hidden', 'opacity-0');
-                if (id === 'app-container') screens[id].classList.add('opacity-100');
-                if (id === 'name-input-modal') screens[id].classList.add('flex'); // Ensure it is flex for modal overlay
-            } else {
-                screens[id].classList.add('hidden');
-                screens[id].classList.remove('flex');
-                if (id === 'app-container') screens[id].classList.remove('opacity-100');
-            }
-        }
-    }
+// Show only the target screen, hide all others
+for (const id in screens) {
+if (screens[id]) {
+if (id === screenId) {
+screens[id].classList.remove('hidden', 'opacity-0');
+if (id === 'app-container') screens[id].classList.add('opacity-100');
+if (id === 'name-input-modal') screens[id].classList.add('flex'); // Ensure it is flex for modal overlay
+} else {
+screens[id].classList.add('hidden');
+screens[id].classList.remove('flex');
+if (id === 'app-container') screens[id].classList.remove('opacity-100');
+}
+}
+}
 }
 
 
@@ -476,34 +502,120 @@ lastAudioTime = Math.max(now, lastAudioTime + 0.03);
 return lastAudioTime;
 }
 
-// --- SETUP AUDIO (Tone.js) (sama seperti sebelumnya) ---
-let clickSynth, correctSynth, wrongSynth;
+// --- SETUP AUDIO (Tone.js) ---
+let clickSynth, correctSynth, wrongSynth, rewardSynth, backgroundMusic;
+const musicVolume = -15; // Volume Musik Latar (rendah)
 
 function setupAudio() {
-clickSynth = new Tone.MembraneSynth({
-pitchDecay: 0.05, octaves: 1,
-envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.1, }
+// 1. Klik Tombol (Discord Join Sound) - Mapping ke PluckSynth
+clickSynth = new Tone.PluckSynth({
+attackNoise: 1,
+dampening: 4000,
+resonance: 0.9
 }).toDestination();
+
+// 2. Jawaban Benar (True Sound Effect) - Mapping ke Polysynth Cepat
 correctSynth = new Tone.PolySynth(Tone.DuoSynth, {
+volume: -5,
 oscillator: { type: "sine" },
 envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1 }
 }).toDestination();
+
+// 3. Jawaban Salah (Loud Incorrect Buzzer) - Mapping ke NoiseSynth dengan Filter
 wrongSynth = new Tone.NoiseSynth({
-volume: -10, noise: { type: "pink" },
-envelope: { attack: 0.001, decay: 0.1, sustain: 0, }
+volume: 0,
+noise: { type: "white" },
+envelope: { attack: 0.01, decay: 0.5, sustain: 0, }
 }).toDestination();
+
+// 4. Reward Unlocked (Roblox Reward Sound) - Mapping ke MembranSynth Cepat
+rewardSynth = new Tone.MembraneSynth({
+volume: -8,
+pitchDecay: 0.01,
+octaves: 2,
+envelope: { attack: 0.01, decay: 0.5, sustain: 0.01, release: 0.2, }
+}).toDestination();
+
+// 5. Background Music (Looping) - Mapping ke Loop dengan pattern sederhana
+const part = new Tone.Part((time, note) => {
+backgroundMusic.triggerAttackRelease(note, "8n", time);
+}, [
+["0:0:0", "C4"], ["0:0:2", "E4"], ["0:1:0", "G4"], ["0:1:2", "A4"],
+["0:2:0", "G4"], ["0:2:2", "E4"], ["0:3:0", "C4"],
+]);
+
+backgroundMusic = new Tone.Synth({
+oscillator: { type: "triangle" },
+envelope: { attack: 0.01, decay: 0.5, sustain: 0.2, release: 0.5 },
+}).toDestination();
+backgroundMusic.volume.value = musicVolume;
+
+part.loop = true;
+part.loopEnd = "1m";
+Tone.Transport.scheduleRepeat(time => {
+// Hanya start loop jika di-enable
+if (appState.isMusicEnabled && Tone.Transport.state !== "started") {
+part.start(0);
+Tone.Transport.start();
+} else if (!appState.isMusicEnabled && Tone.Transport.state === "started") {
+Tone.Transport.stop();
+}
+}, "1m");
 }
 
+// Fungsi global untuk mengontrol Music ON/OFF
+window.toggleMusic = function() {
+appState.isMusicEnabled = !appState.isMusicEnabled;
+localStorage.setItem('isMusicEnabled', appState.isMusicEnabled);
+if (appState.isMusicEnabled) {
+// Mulai Tone.context jika belum jalan
+if (Tone.context.state !== 'running') {
+Tone.start().then(() => {
+Tone.Transport.start();
+});
+} else {
+Tone.Transport.start();
+}
+} else {
+Tone.Transport.stop();
+}
+renderApp(); // Render ulang Opsi
+}
+
+// Fungsi global untuk mengontrol SFX ON/OFF
+window.toggleSfx = function() {
+appState.isSfxEnabled = !appState.isSfxEnabled;
+localStorage.setItem('isSfxEnabled', appState.isSfxEnabled);
+renderApp(); // Render ulang Opsi
+}
+
+// Memuat preferensi Audio dari LocalStorage
+function loadAudioSettings() {
+const sfx = localStorage.getItem('isSfxEnabled');
+const music = localStorage.getItem('isMusicEnabled');
+if (sfx !== null) appState.isSfxEnabled = sfx === 'true';
+if (music !== null) appState.isMusicEnabled = music === 'true';
+}
+
+
 function playClick() {
-if (clickSynth) { clickSynth.triggerAttackRelease("C4", "8n", safeTime()); }
+if (!appState.isSfxEnabled) return;
+if (clickSynth) { clickSynth.triggerAttackRelease("G4", "16n", safeTime()); }
 }
 
 function playCorrect() {
+if (!appState.isSfxEnabled) return;
 if (correctSynth) { correctSynth.triggerAttackRelease(["C5", "E5", "G5"], "4n", safeTime()); }
 }
 
 function playWrong() {
-if (wrongSynth) { wrongSynth.triggerAttackRelease("16n", safeTime()); }
+if (!appState.isSfxEnabled) return;
+if (wrongSynth) { wrongSynth.triggerAttackRelease("A3", "8n", safeTime()); }
+}
+
+function playReward() {
+if (!appState.isSfxEnabled) return;
+if (rewardSynth) { rewardSynth.triggerAttackRelease("C6", "8n", safeTime(), 0.5); }
 }
 
 // --- SPLASH DAN LOADING ---
@@ -560,31 +672,35 @@ FIREBASE AUTH HANDLERS
 
 // Handle Google Sign-In
 document.getElementById('google-signin-btn').addEventListener('click', async () => {
-    console.log("Google Sign-In button clicked. Opening popup...");
-    const provider = new GoogleAuthProvider();
-    // Tambahkan prompt select_account agar user bisa memilih akun Google
-    provider.setCustomParameters({
-        prompt: 'select_account'
-    });
-    try {
-        await signInWithPopup(appState.auth, provider);
-        console.log("[GOOGLE AUTH] Popup Success. onAuthStateChanged should now trigger.");
-        // onAuthStateChanged akan menangani transisi layar
-    } catch (error) {
-        console.error("[GOOGLE AUTH ERROR] Kesalahan Login Google:", error);
-        showAlert("Login Gagal", `Gagal masuk dengan Google: ${error.code}. Coba lagi.`);
-    }
+// Mulai AudioContext saat interaksi pengguna pertama
+if (Tone.context.state !== 'running') {
+Tone.start();
+}
+console.log("Google Sign-In button clicked. Opening popup...");
+const provider = new GoogleAuthProvider();
+// Tambahkan prompt select_account agar user bisa memilih akun Google
+provider.setCustomParameters({
+prompt: 'select_account'
+});
+try {
+await signInWithPopup(appState.auth, provider);
+console.log("[GOOGLE AUTH] Popup Success. onAuthStateChanged should now trigger.");
+// onAuthStateChanged akan menangani transisi layar
+} catch (error) {
+console.error("[GOOGLE AUTH ERROR] Kesalahan Login Google:", error);
+showAlert("Login Gagal", `Gagal masuk dengan Google: ${error.code}. Coba lagi.`);
+}
 });
 
 // REMOVED: Handle Anonymous Sign-In Button
 
 // Handle Sign Out
 window.handleSignOut = async function() {
-    if (appState.auth) {
-        await signOut(appState.auth);
-        console.log("[AUTH LOG] User Signed Out.");
-        // onAuthStateChanged akan mengarahkan ke auth-screen
-    }
+if (appState.auth) {
+await signOut(appState.auth);
+console.log("[AUTH LOG] User Signed Out.");
+// onAuthStateChanged akan mengarahkan ke auth-screen
+}
 }
 
 
@@ -608,7 +724,7 @@ const docSnap = await getDoc(getAchievementsRef());
 
 if (docSnap.exists()) {
 const data = docSnap.data();
-// Ambil nama dari Achievement Profile 
+// Ambil nama dari Achievement Profile
 appState.userName = data.name || appState.userName;
 
 appState.maxConsecutiveCorrect = data.maxConsecutiveCorrect || 0;
@@ -700,6 +816,7 @@ console.error("Error saving achievements:", e);
 
 if (newlyUnlocked.length > 0) {
 // Tampilkan notifikasi reward baru
+playReward(); // <-- PLAY REWARD SOUND
 showFeedbackAndContinue(true, 0, `Anda telah membuka Achievement Baru: ${newlyUnlocked.join(', ')}!`, 'reward');
 }
 }
@@ -812,6 +929,10 @@ viewContent.innerHTML = '';
 switch (appState.currentView) {
 case 'menu':
 viewContent.innerHTML = renderMenu();
+// Memulai musik latar jika diaktifkan saat di menu utama
+if (appState.isMusicEnabled && Tone.Transport.state !== "started") {
+Tone.Transport.start();
+}
 break;
 case 'mode_select':
 viewContent.innerHTML = renderPracticeModeSelection();
@@ -875,7 +996,7 @@ viewContent.style.opacity = 0;
 scoreDisplay.style.opacity = 0;
 
 if (type === 'reward') {
-playCorrect(); // Menggunakan suara benar untuk reward
+// playReward() dipanggil di checkAndUnlockRewards
 quizModalIcon.innerHTML = '🎁';
 quizModalText.textContent = 'SELAMAT!';
 quizModalSubtext.textContent = subtextOverride;
@@ -1076,32 +1197,32 @@ viewContent.innerHTML = html;
 * Karena anonim sudah dihapus, fungsi ini hanya perlu cek username.
 */
 function checkUserAndStart(mode) {
-    playClick();
-    if (Tone.context.state !== 'running') {
-        Tone.start();
-    }
+playClick();
+if (Tone.context.state !== 'running') {
+Tone.start();
+}
 
-    if (!appState.userId) {
-         showAlert("Login Diperlukan", "Anda harus masuk dengan Google untuk mengakses fitur ini.");
-         showScreen('auth-screen');
-         return;
-    }
-    
-    if (mode === 'nonstop') {
-        // Karena semua user yang masuk BUKAN anonim, kita hanya cek apakah username sudah ada.
-        if (!appState.userName) {
-             showScreen('name-input-modal');
-             usernameInput.focus();
-             return;
-        }
-    }
-    
-    // Lanjutkan ke game
-    if (mode === 'nonstop') {
-        startGame(mode);
-    } else if (mode === 'practice') {
-        navigate('mode_select'); // Arahkan ke pemilihan topik
-    }
+if (!appState.userId) {
+showAlert("Login Diperlukan", "Anda harus masuk dengan Google untuk mengakses fitur ini.");
+showScreen('auth-screen');
+return;
+}
+
+if (mode === 'nonstop') {
+// Karena semua user yang masuk BUKAN anonim, kita hanya cek apakah username sudah ada.
+if (!appState.userName) {
+showScreen('name-input-modal');
+usernameInput.focus();
+return;
+}
+}
+
+// Lanjutkan ke game
+if (mode === 'nonstop') {
+startGame(mode);
+} else if (mode === 'practice') {
+navigate('mode_select'); // Arahkan ke pemilihan topik
+}
 }
 
 /**
@@ -1109,101 +1230,122 @@ function checkUserAndStart(mode) {
 * Ditingkatkan untuk MENCEGAK DUPLIKASI USERNAME
 */
 async function saveUsernameAndStart() {
-    const name = usernameInput.value.trim();
-    const user = appState.auth.currentUser;
+const name = usernameInput.value.trim();
+const user = appState.auth.currentUser;
 
-    if (!user) {
-        showAlert("Sesi Tidak Valid", "Terjadi kesalahan sesi. Silakan masuk kembali.");
-        nameInputModal.classList.add('hidden');
-        showScreen('auth-screen');
-        return;
-    }
+if (!user) {
+showAlert("Sesi Tidak Valid", "Terjadi kesalahan sesi. Silakan masuk kembali.");
+nameInputModal.classList.add('hidden');
+showScreen('auth-screen');
+return;
+}
 
-    if (name.length < 3 || name.length > 20) {
-        document.getElementById('feedback-message-modal')?.remove();
-        const modalBody = document.querySelector('#name-input-modal > div');
-        const feedbackDiv = document.createElement('p');
-        feedbackDiv.id = 'feedback-message-modal';
-        feedbackDiv.className = 'text-red-500 text-sm mt-2';
-        feedbackDiv.textContent = 'Nama harus antara 3 hingga 20 karakter.';
-        modalBody.appendChild(feedbackDiv);
-        return;
-    }
-    
-    showLoading(); // Tampilkan loading saat memvalidasi
+if (name.length < 3 || name.length > 20) {
+document.getElementById('feedback-message-modal')?.remove();
+const modalBody = document.querySelector('#name-input-modal > div');
+const feedbackDiv = document.createElement('p');
+feedbackDiv.id = 'feedback-message-modal';
+feedbackDiv.className = 'text-red-500 text-sm mt-2';
+feedbackDiv.textContent = 'Nama harus antara 3 hingga 20 karakter.';
+modalBody.appendChild(feedbackDiv);
+return;
+}
 
-    // 1. Validasi Keunikan Username (NEW LOGIC)
-    const normalizedName = name.toLowerCase();
-    const usersRef = getUserProfilesCollectionRef();
-    
-    try {
-        // Query untuk mencari username yang sama
-        const q = query(usersRef, where("usernameNormalized", "==", normalizedName));
-        const snapshot = await getDocs(q);
+showLoading(); // Tampilkan loading saat memvalidasi
 
-        let isDuplicate = false;
-        snapshot.forEach(doc => {
-            // Jika ada username yang cocok dan itu BUKAN dokumen user saat ini
-            if (doc.id !== user.uid) {
-                isDuplicate = true;
-            }
-        });
+// 1. Validasi Keunikan Username (NEW LOGIC)
+const normalizedName = name.toLowerCase();
+const usersRef = getUserProfilesCollectionRef();
 
-        if (isDuplicate) {
-            hideLoading();
-            showAlert("Username Tidak Tersedia", "Username tersebut sudah digunakan oleh pengguna lain. Silakan pilih nama lain.");
-            return; // Hentikan proses
-        }
+try {
+// Query untuk mencari username yang sama
+const q = query(usersRef, where("usernameNormalized", "==", normalizedName));
+const snapshot = await getDocs(q);
 
-        // 2. Simpan ke Firestore jika unik
-        const profileRef = getUserProfileDocRef(user.uid);
-        console.log(`[FIRESTORE] Saving profile data for UID: ${user.uid}`);
-        await setDoc(profileRef, {
-            username: name,
-            usernameNormalized: normalizedName, // Field untuk pencarian/validasi case-insensitive
-            email: user.email || 'N/A', // Memastikan email tersimpan
-            photoURL: user.photoURL || null,
-            createdAt: new Date().toISOString(),
-        }, { merge: true }); 
+let isDuplicate = false;
+snapshot.forEach(doc => {
+// Jika ada username yang cocok dan itu BUKAN dokumen user saat ini
+if (doc.id !== user.uid) {
+isDuplicate = true;
+}
+});
 
-        appState.userName = name;
-        nameInputModal.classList.add('hidden');
-        document.getElementById('feedback-message-modal')?.remove();
-        
-        // Simpan juga ke profile achievements (memastikan nama terdaftar)
-        const achRef = getAchievementsRef();
-        await setDoc(achRef, { name: name, userId: user.uid }, { merge: true });
-        
-        console.log("✅ Profile and Achievement data saved successfully to Firestore.");
-        
-        hideLoading();
-        showScreen('app-container');
-        renderApp(); // Start the app by showing the menu
-        
-    } catch (e) {
-        hideLoading();
-        console.error("Error saving/validating username:", e);
-        showAlert("Kesalahan Penyimpanan", `Gagal menyimpan username: ${e.message}`);
-    }
+if (isDuplicate) {
+hideLoading();
+showAlert("Username Tidak Tersedia", "Username tersebut sudah digunakan oleh pengguna lain. Silakan pilih nama lain.");
+return; // Hentikan proses
+}
+
+// 2. Simpan ke Firestore jika unik
+const profileRef = getUserProfileDocRef(user.uid);
+console.log(`[FIRESTORE] Saving profile data for UID: ${user.uid}`);
+await setDoc(profileRef, {
+username: name,
+usernameNormalized: normalizedName, // Field untuk pencarian/validasi case-insensitive
+email: user.email || 'N/A', // Memastikan email tersimpan
+photoURL: user.photoURL || null,
+createdAt: new Date().toISOString(),
+}, { merge: true });
+
+appState.userName = name;
+nameInputModal.classList.add('hidden');
+document.getElementById('feedback-message-modal')?.remove();
+
+// Simpan juga ke profile achievements (memastikan nama terdaftar)
+const achRef = getAchievementsRef();
+await setDoc(achRef, { name: name, userId: user.uid }, { merge: true });
+
+console.log("✅ Profile and Achievement data saved successfully to Firestore.");
+
+hideLoading();
+showScreen('app-container');
+renderApp(); // Start the app by showing the menu
+
+} catch (e) {
+hideLoading();
+console.error("Error saving/validating username:", e);
+showAlert("Kesalahan Penyimpanan", `Gagal menyimpan username: ${e.message}`);
+}
 }
 
 
 function renderOptions() {
-// Sama seperti sebelumnya, tambahkan tombol Sign Out
+// Menambahkan kontrol SFX dan Musik
 const isGoogleUser = appState.auth && appState.auth.currentUser;
 const userEmail = appState.auth?.currentUser?.email || 'N/A';
 
 return `
 <div class="flex flex-col space-y-6">
 <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-teal-500 pb-2">Pengaturan Opsi</h2>
+
 <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-<label class="block text-gray-700 font-bold mb-3 flex items-center space-x-2">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
-Kontrol Suara
+<h3 class="text-lg font-bold text-teal-700 mb-3">Kontrol Audio</h3>
+
+<!-- SFX Toggle -->
+<div class="flex justify-between items-center py-3 border-b border-gray-100">
+<label class="block text-gray-700 font-medium">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.07a1 1 0 011.234 0l6 3a1 1 0 01.383.75v6a1 1 0 01-.383.75l-6 3a1 1 0 01-1.234 0l-6-3a1 1 0 01-.383-.75v-6a1 1 0 01.383-.75l6-3zM10 16a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" /></svg>
+Efek Suara (SFX)
 </label>
-<input type="range" class="w-full accent-teal-500" value="100" min="0" max="100" oninput="Tone.Destination.volume.value = this.value == 0 ? -Infinity : (this.value / 100 * 20 - 20)">
-<p class="text-xs text-gray-400 mt-2">Geser untuk mengatur volume (default: 100%).</p>
+<label class="toggle-switch">
+<input type="checkbox" id="sfx-toggle" onchange="toggleSfx()" ${appState.isSfxEnabled ? 'checked' : ''}>
+<span class="slider"></span>
+</label>
 </div>
+
+<!-- Music Toggle -->
+<div class="flex justify-between items-center pt-3">
+<label class="block text-gray-700 font-medium">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1-1H3a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1V3zM3 3h14v14H3V3z" clip-rule="evenodd" /></svg>
+Musik Latar (BGM)
+</label>
+<label class="toggle-switch">
+<input type="checkbox" id="music-toggle" onchange="toggleMusic()" ${appState.isMusicEnabled ? 'checked' : ''}>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+
 <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
 <label class="block text-gray-700 font-bold mb-3 flex items-center space-x-2">
 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
@@ -1211,16 +1353,16 @@ Nama Pengguna
 </label>
 <p class="text-lg font-mono text-teal-600 bg-teal-50 p-2 rounded-lg">${appState.userName || 'Belum diatur'}</p>
 ${isGoogleUser ? `
-    <p class="text-xs text-gray-500 mt-1">Email Akun Google: ${userEmail}</p>
-    <button onclick="showScreen('name-input-modal'); usernameInput.focus();" class="mt-3 text-sm text-amber-600 hover:text-amber-700 font-semibold underline">Ubah Nama</button>
+<p class="text-xs text-gray-500 mt-1">Email Akun Google: ${userEmail}</p>
+<button onclick="showScreen('name-input-modal'); usernameInput.focus();" class="mt-3 text-sm text-amber-600 hover:text-amber-700 font-semibold underline">Ubah Nama</button>
 ` : `<p class="text-sm text-red-500 mt-2">Anda harus masuk untuk mengelola data akun.</p>`}
 </div>
 
 ${isGoogleUser ? `
-    <button onclick="handleSignOut()" class="btn-primary bg-red-600 text-white p-3 rounded-xl font-bold hover:bg-red-700 shadow-md flex items-center justify-center space-x-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.586 7l3.293-3.293a1 1 0 10-1.414-1.414l-4 4a1 1 0 000 1.414l4 4a1 1 0 001.414-1.414L10.586 11H17a1 1 0 100-2H10.586z" clip-rule="evenodd" /></svg>
-        <span>Keluar (Sign Out)</span>
-    </button>
+<button onclick="handleSignOut()" class="btn-primary bg-red-600 text-white p-3 rounded-xl font-bold hover:bg-red-700 shadow-md flex items-center justify-center space-x-1">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.586 7l3.293-3.293a1 1 0 10-1.414-1.414l-4 4a1 1 0 000 1.414l4 4a1 1 0 001.414-1.414L10.586 11H17a1 1 0 100-2H10.586z" clip-rule="evenodd" /></svg>
+<span>Keluar (Sign Out)</span>
+</button>
 ` : ''}
 
 </div>
@@ -1413,8 +1555,15 @@ showFeedbackAndContinue(isCorrect, scoreChange);
 // --- INISIALISASI ---
 window.onload = () => {
 initFirebase();
+// Memuat setting audio sebelum setup audio agar synthesizer tahu state awalnya
+loadAudioSettings();
 showSplash();
 setupAudio();
+// Memastikan musik dimainkan jika diaktifkan saat app dimuat (setelah interaksi pertama)
+if (appState.isMusicEnabled) {
+// Kita tidak bisa memulai Tone.Transport di sini tanpa interaksi pengguna
+// Ini akan ditangani oleh klik tombol pertama (misalnya, tombol Google Sign-In atau tombol Menu).
+}
 };
 
 // Buat fungsi global untuk onclick
@@ -1429,6 +1578,8 @@ window.renderLeaderboard = renderLeaderboard;
 window.renderRewards = renderRewards;
 window.showAlert = showAlert; // Tambahkan ke global scope
 window.handleSignOut = handleSignOut;
+window.toggleMusic = toggleMusic; // Tambahkan ke global scope
+window.toggleSfx = toggleSfx; // Tambahkan ke global scope
 </script>
 </body>
 </html>
