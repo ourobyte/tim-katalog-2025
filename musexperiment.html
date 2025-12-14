@@ -165,8 +165,8 @@ signInWithCustomToken, 
 onAuthStateChanged,
 GoogleAuthProvider,
 signInWithPopup,
-signOut,
-setLogLevel // Dipertahankan untuk debugging
+signOut
+// setLogLevel REMOVED from firebase-auth.js
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { 
 getFirestore, 
@@ -176,7 +176,8 @@ doc, 
 setDoc,
 getDoc,
 query,
-where
+where,
+setLogLevel // CORRECT LOCATION for setLogLevel in modular Firestore
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- DATA KUIS ---
@@ -861,6 +862,7 @@ viewContent.style.opacity = 0;
 scoreDisplay.style.opacity = 0;
 
 if (type === 'reward') {
+playCorrect(); // Menggunakan suara benar untuk reward
 quizModalIcon.innerHTML = '🎁';
 quizModalText.textContent = 'SELAMAT!';
 quizModalSubtext.textContent = subtextOverride;
@@ -1091,7 +1093,7 @@ function checkUserAndStart(mode) {
 
 /**
 * Menyimpan username ke Firestore dan memulai aplikasi.
-* Ditingkatkan untuk MENCEGAH DUPLIKASI USERNAME
+* Ditingkatkan untuk MENCEGAK DUPLIKASI USERNAME
 */
 async function saveUsernameAndStart() {
     const name = usernameInput.value.trim();
