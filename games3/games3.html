@@ -60,6 +60,15 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(24px);
 }
+/* Custom class for clickable usernames */
+.clickable-username {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: #10b981; /* teal-500 */
+}
+.clickable-username:hover {
+    opacity: 0.8;
+}
 </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-0 sm:p-4">
@@ -128,6 +137,52 @@ style="display: none;">
 Kembali
 </button>
 </footer>
+</div>
+
+<!-- Modal Info Profil Pengguna (NEW) -->
+<div id="user-profile-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden p-4">
+    <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-2xl space-y-5 transform transition-transform duration-300 scale-100">
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-2xl font-extrabold text-teal-700 flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                <span id="profile-username"></span>
+            </h3>
+            <button onclick="document.getElementById('user-profile-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Trophy Section -->
+            <div class="p-4 bg-teal-50 rounded-xl border border-teal-200 shadow-inner flex items-center justify-between">
+                <span class="text-lg font-bold text-gray-700">Level Trophy</span>
+                <span id="profile-trophy-level" class="text-3xl font-extrabold text-teal-600 bg-teal-200 px-3 py-1 rounded-full shadow-md">0</span>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="p-3 bg-gray-100 rounded-lg">
+                    <p class="text-xs text-gray-500 font-medium">Skor Tertinggi</p>
+                    <p id="profile-highest-score" class="text-xl font-bold text-amber-600">0</p>
+                </div>
+                <div class="p-3 bg-gray-100 rounded-lg">
+                    <p class="text-xs text-gray-500 font-medium">Beruntun Terlama</p>
+                    <p id="profile-max-consecutive" class="text-xl font-bold text-red-600">0</p>
+                </div>
+            </div>
+
+            <!-- Rewards Unlocked -->
+            <div>
+                <h4 class="text-base font-bold text-gray-800 mb-2 border-b pb-1">Rewards Dibuka (<span id="profile-reward-count">0</span>)</h4>
+                <div id="profile-rewards-list" class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <!-- Rewards akan diisi di sini -->
+                    <p class="text-gray-500 col-span-3 text-sm">Tidak ada rewards yang terbuka.</p>
+                </div>
+            </div>
+        </div>
+        
+        <p id="profile-user-id" class="text-xs text-gray-400 break-all text-center pt-2 border-t mt-4"></p>
+    </div>
 </div>
 
 <!-- Modal Input Nama Pengguna (Digunakan sebagai Setup Username) -->
@@ -238,17 +293,27 @@ const ALL_QUESTIONS = [
 // Daftar lengkap pertanyaan untuk mode nonstop (gabungan semua topic)
 const NONSTOP_QUESTIONS = ALL_QUESTIONS;
 
-// Daftar Achievement
+// Daftar Achievement (DIPERBARUI DENGAN TROPHY)
 const ACHIEVEMENTS = [
+// Headmachine (HM)
 { id: 'HM_I', name: 'Headmachine I', criteria: 'Jawaban Benar Beruntun', value: 15, unit: 'soal', icon: '🧠', category: 'HEADMACHINE' },
 { id: 'HM_II', name: 'Headmachine II', criteria: 'Jawaban Benar Beruntun', value: 30, unit: 'soal', icon: '🤖', category: 'HEADMACHINE' },
 { id: 'HM_III', name: 'Headmachine III', criteria: 'Jawaban Benar Beruntun', value: 60, unit: 'soal', icon: '✨', category: 'HEADMACHINE' },
 { id: 'HM_IV', name: 'Headmachine IV', criteria: 'Jawaban Benar Beruntun', value: 120, unit: 'soal', icon: '👑', category: 'HEADMACHINE' },
+// Hardworker (HW)
 { id: 'HW_I', name: 'Hardworker I', criteria: 'Skor Tertinggi Sepanjang Masa', value: 100, unit: 'poin', icon: '💪', category: 'HARDWORKER' },
 { id: 'HW_II', name: 'Hardworker II', criteria: 'Skor Tertinggi Sepanjang Masa', value: 200, unit: 'poin', icon: '🌟', category: 'HARDWORKER' },
 { id: 'HW_III', name: 'Hardworker III', criteria: 'Skor Tertinggi Sepanjang Masa', value: 400, unit: 'poin', icon: '🔥', category: 'HARDWORKER' },
 { id: 'HW_IV', name: 'Hardworker IV', criteria: 'Skor Tertinggi Sepanjang Masa', value: 800, unit: 'poin', icon: '🚀', category: 'HARDWORKER' },
+// Trophy (TR) - NEW
+{ id: 'TR_I', name: 'Rookie I', criteria: 'Trophy Level', value: 5, unit: 'level', icon: '🔰', category: 'TROPHY' },
+{ id: 'TR_II', name: 'Rookie II', criteria: 'Trophy Level', value: 10, unit: 'level', icon: '⭐', category: 'TROPHY' },
+{ id: 'TR_III', name: 'Rookie III', criteria: 'Trophy Level', value: 20, unit: 'level', icon: '🏅', category: 'TROPHY' },
+{ id: 'TR_IV', name: 'Minor I', criteria: 'Trophy Level', value: 40, unit: 'level', icon: '🎖️', category: 'TROPHY' },
+{ id: 'TR_V', name: 'Minor II', criteria: 'Trophy Level', value: 80, unit: 'level', icon: '🏆', category: 'TROPHY' },
+{ id: 'TR_VI', name: 'Major Legend', criteria: 'Trophy Level', value: 160, unit: 'level', icon: '🥇', category: 'TROPHY' }, // Adjusted from 180 to 160 (Max level)
 ];
+
 
 /* ===============================
 FIREBASE CONFIG & INIT
@@ -291,6 +356,10 @@ currentConsecutiveCorrect: 0,
 maxConsecutiveCorrect: 0,
 highestScoreEver: 0,
 unlockedRewards: [],
+
+// NEW Trophy State
+trophyLevel: 0,
+totalNonstopSessions: 0, // Metric for leveling
 
 // Audio State
 isSfxEnabled: true,  // Default ON
@@ -438,7 +507,8 @@ function showScreen(screenId) {
         'auth-screen': document.getElementById('auth-screen'),
         'name-input-modal': nameInputModal,
         'app-container': appContainer,
-        'alert-modal': document.getElementById('alert-modal')
+        'alert-modal': document.getElementById('alert-modal'),
+        'user-profile-modal': document.getElementById('user-profile-modal') // NEW
     };
 
     // Hide the alert modal explicitly first, unless it is the target screen
@@ -452,7 +522,7 @@ function showScreen(screenId) {
             if (id === screenId) {
                 screens[id].classList.remove('hidden', 'opacity-0');
                 if (id === 'app-container') screens[id].classList.add('opacity-100');
-                if (id === 'name-input-modal') screens[id].classList.add('flex'); // Ensure it is flex for modal overlay
+                if (id === 'name-input-modal' || id === 'user-profile-modal') screens[id].classList.add('flex'); // Ensure modal overlay is flex
             } else {
                 screens[id].classList.add('hidden');
                 screens[id].classList.remove('flex');
@@ -683,7 +753,7 @@ window.handleSignOut = async function() {
 
 
 /* ===============================
-FIREBASE LOGIC & ACHIEVEMENTS (Diadaptasi)
+FIREBASE LOGIC & ACHIEVEMENTS (DIPERBARUI)
 ================================ */
 // Menggunakan path yang disarankan: artifacts/{appId}/public/data/leaderboard
 const getLeaderboardRef = () => collection(appState.db, `artifacts/${appId}/public/data/leaderboard`);
@@ -691,9 +761,23 @@ const getLeaderboardRef = () => collection(appState.db, `artifacts/${appId}/publ
 const getAchievementsRef = () => doc(appState.db, `artifacts/${appId}/public/data/achievements`, appState.userId);
 
 
+// --- TROPHY LEVEL LOGIC ---
 /**
-* Memuat data pencapaian dari Firestore.
-*/
+ * Menghitung Level Trophy berdasarkan total sesi nonstop yang diselesaikan. Max 160.
+ * @param {number} sessions 
+ * @returns {number} Level Trophy
+ */
+function calculateTrophyLevel(sessions) {
+    if (sessions >= 150) return 160;
+    if (sessions >= 100) return 100 + Math.floor((sessions - 100) * 1.2); 
+    if (sessions >= 50) return 50 + Math.floor((sessions - 50) * 1.5);
+    if (sessions >= 10) return 10 + Math.floor((sessions - 10) * 1.2);
+    return sessions;
+}
+
+/**
+ * Memuat data pencapaian dari Firestore.
+ */
 async function loadAchievements() {
 if (!appState.db || !appState.userId) return;
 
@@ -708,6 +792,10 @@ appState.userName = data.name || appState.userName;
 appState.maxConsecutiveCorrect = data.maxConsecutiveCorrect || 0;
 appState.highestScoreEver = data.highestScoreEver || 0;
 appState.unlockedRewards = data.unlockedRewards || [];
+
+// NEW: Trophy Data
+appState.totalNonstopSessions = data.totalNonstopSessions || 0;
+appState.trophyLevel = data.trophyLevel || calculateTrophyLevel(appState.totalNonstopSessions);
 }
 } catch (e) {
 console.error("Error loading achievements:", e);
@@ -718,13 +806,16 @@ console.error("Error loading achievements:", e);
 * Menyimpan skor ke koleksi 'leaderboard' (hanya mode nonstop).
 */
 async function saveScore(name, score) {
-// Hapus pengecekan isAnonymous karena sekarang semua user harus login Google
 if (!appState.db || !appState.userId) {
 console.error("Firestore atau User ID tidak valid. Gagal menyimpan skor.");
 return;
 }
 
-// Simpan skor ke leaderboard
+// 1. Update session count and level
+appState.totalNonstopSessions++;
+const levelUp = checkAndUnlockRewards(score, appState.currentConsecutiveCorrect); // Triggers reward check AND trophy update
+
+// 2. Simpan skor ke leaderboard
 const ref = doc(getLeaderboardRef(), appState.userId);
 
 try {
@@ -733,6 +824,7 @@ await setDoc(ref, {
 name,
 score, // Skor tertinggi yang baru saja dicapai
 userId: appState.userId,
+trophyLevel: appState.trophyLevel, // Include trophy level in leaderboard data
 updatedAt: Date.now()
 });
 console.log("✅ Skor disimpan ke Leaderboard.");
@@ -742,19 +834,23 @@ console.error("Error setting document to Firestore: ", e);
 }
 
 /**
-* Memperbarui data pencapaian (max score dan max consecutive) dan membuka reward.
+* Memperbarui data pencapaian (max score dan max consecutive, dan trophy) dan membuka reward.
 */
-async function checkAndUnlockRewards(finalScore, consecutiveCorrect) {
+function checkAndUnlockRewards(finalScore, consecutiveCorrect) {
 
-if (!appState.db || !appState.userId) return; // Hapus pengecekan isAnonymous
+if (!appState.db || !appState.userId) return;
 
 const isNewHighScore = finalScore > appState.highestScoreEver;
 const isNewMaxConsecutive = consecutiveCorrect > appState.maxConsecutiveCorrect;
 
-if (!isNewHighScore && !isNewMaxConsecutive) return;
-
 appState.highestScoreEver = isNewHighScore ? finalScore : appState.highestScoreEver;
 appState.maxConsecutiveCorrect = isNewMaxConsecutive ? consecutiveCorrect : appState.maxConsecutiveCorrect;
+
+// Check for Trophy Level Up (if called after session increment)
+const oldLevel = appState.trophyLevel;
+const newLevel = Math.min(160, calculateTrophyLevel(appState.totalNonstopSessions));
+const isLevelUp = newLevel > oldLevel;
+appState.trophyLevel = newLevel;
 
 // 1. Cek dan buka reward
 let newlyUnlocked = [];
@@ -766,6 +862,8 @@ if (achievement.category === 'HARDWORKER' && appState.highestScoreEver >= achiev
 meetsCriteria = true;
 } else if (achievement.category === 'HEADMACHINE' && appState.maxConsecutiveCorrect >= achievement.value) {
 meetsCriteria = true;
+} else if (achievement.category === 'TROPHY' && appState.trophyLevel >= achievement.value) {
+meetsCriteria = true;
 }
 
 if (meetsCriteria) {
@@ -775,28 +873,88 @@ console.log(`🎉 Achievement Unlocked: ${achievement.name}`);
 }
 });
 
-// 2. Simpan status pencapaian
+// 2. Simpan status pencapaian + trophy level
 const achRef = getAchievementsRef();
 try {
-console.log(`[FIRESTORE] Saving achievements for user ${appState.userId}...`);
-await setDoc(achRef, {
+console.log(`[FIRESTORE] Saving achievements/trophy data for user ${appState.userId}...`);
+setDoc(achRef, {
 name: appState.userName,
 userId: appState.userId,
 highestScoreEver: appState.highestScoreEver,
 maxConsecutiveCorrect: appState.maxConsecutiveCorrect,
 unlockedRewards: appState.unlockedRewards,
+trophyLevel: appState.trophyLevel, // NEW
+totalNonstopSessions: appState.totalNonstopSessions, // NEW
 updatedAt: Date.now()
-}, { merge: true }); // Gunakan merge agar tidak menimpa field lain
-console.log("✅ Achievements saved/updated.");
+}, { merge: true }); 
+console.log("✅ Achievements/Trophy saved/updated.");
 } catch (e) {
 console.error("Error saving achievements:", e);
 }
 
 if (newlyUnlocked.length > 0) {
-// Tampilkan notifikasi reward baru
 playReward(); // <-- PLAY REWARD SOUND
 showFeedbackAndContinue(true, 0, `Anda telah membuka Achievement Baru: ${newlyUnlocked.join(', ')}!`, 'reward');
 }
+
+return isLevelUp;
+}
+
+/**
+ * Mengambil data profil user (termasuk trophy dan rewards) dari Firestore dan menampilkan modal.
+ * @param {string} uid User ID yang akan ditampilkan.
+ * @param {string} username Username yang akan ditampilkan (untuk fallback cepat).
+ */
+window.fetchAndShowUserProfile = async function(uid, username) {
+    if (!appState.db) return showAlert("Error", "Sistem belum siap untuk memuat data.");
+    
+    showLoading();
+    const achRef = getAchievementsRef();
+    const targetRef = doc(achRef.parent, uid);
+    
+    try {
+        const docSnap = await getDoc(targetRef);
+        if (!docSnap.exists()) {
+            hideLoading();
+            return showAlert("Tidak Ditemukan", "Data profil pengguna ini belum tercatat.");
+        }
+
+        const data = docSnap.data();
+        const rewards = data.unlockedRewards || [];
+        const allRewards = ACHIEVEMENTS.filter(a => rewards.includes(a.id));
+
+        // Update Modal Content
+        document.getElementById('profile-username').textContent = data.name || username;
+        document.getElementById('profile-trophy-level').textContent = data.trophyLevel || 0;
+        document.getElementById('profile-highest-score').textContent = data.highestScoreEver || 0;
+        document.getElementById('profile-max-consecutive').textContent = data.maxConsecutiveCorrect || 0;
+        document.getElementById('profile-user-id').textContent = `UID: ${uid}`;
+        document.getElementById('profile-reward-count').textContent = rewards.length;
+        
+        const rewardsListContainer = document.getElementById('profile-rewards-list');
+        rewardsListContainer.innerHTML = '';
+        
+        if (allRewards.length > 0) {
+            allRewards.forEach(r => {
+                rewardsListContainer.innerHTML += `
+                    <div class="p-2 bg-pink-100 rounded-lg border border-pink-300">
+                        <span class="text-xl block">${r.icon}</span>
+                        <span class="font-medium text-pink-800">${r.name}</span>
+                    </div>
+                `;
+            });
+        } else {
+            rewardsListContainer.innerHTML = '<p class="text-gray-500 col-span-3 text-sm">Belum ada rewards yang terbuka.</p>';
+        }
+
+        hideLoading();
+        showScreen('user-profile-modal');
+
+    } catch (e) {
+        hideLoading();
+        console.error("Error fetching user profile:", e);
+        showAlert("Error Memuat Profil", "Gagal memuat data pengguna. Cek koneksi.");
+    }
 }
 
 
@@ -833,7 +991,7 @@ return [];
 }
 }
 
-// --- FUNGSI NAVIGASI DAN RENDER (sama seperti sebelumnya) ---
+// --- FUNGSI NAVIGASI DAN RENDER (DIPERBARUI) ---
 
 /**
 * Mengubah tampilan (view) aplikasi.
@@ -847,7 +1005,8 @@ appState.currentView = view;
 
 setTimeout(() => {
 const isQuiz = (view === 'quiz' && appState.quizMode === 'nonstop');
-backButton.style.display = (view === 'menu' || view === 'mode_select') ? 'none' : 'block';
+// Perbaikan: Tombol kembali HANYA tersembunyi di 'menu'. Muncul di 'mode_select', 'options', 'rewards', 'about', dan 'quiz'.
+backButton.style.display = (view === 'menu') ? 'none' : 'block'; 
 scoreDisplay.classList.toggle('hidden', !isQuiz);
 
 if (view === 'leaderboard') {
@@ -866,37 +1025,33 @@ hideLoading();
 function handleBackButtonClick() {
 playClick();
 
-if (appState.currentView !== 'quiz') {
-// Jika bukan di kuis, kembali ke menu/view sebelumnya
-navigate(appState.previousView);
-return;
-}
-
-if (appState.quizMode === 'nonstop') {
+if (appState.currentView === 'quiz') {
 showCustomConfirm({
-title: "Akhiri Sesi Nonstop?",
-message: `Anda akan kembali ke menu utama. Skor Anda (${appState.score}) akan disimpan ke Leaderboard.`,
-okText: "Ya, Akhiri & Simpan",
+title: "Akhiri Sesi?",
+message: appState.quizMode === 'nonstop' ?
+    `Anda akan kembali ke menu utama. Skor Anda (${appState.score}) akan disimpan ke Leaderboard.` :
+    `Anda akan kembali ke pemilihan topik. Progres latihan tidak memengaruhi Skor Global.`,
+okText: appState.quizMode === 'nonstop' ? "Ya, Akhiri & Simpan" : "Ya, Akhiri Latihan",
 onConfirm: () => {
-// Logika yang dijalankan jika user mengkonfirmasi
-if (appState.score > 0 && appState.userName) { // Hapus pengecekan isAnonymous
-saveScore(appState.userName, appState.score);
-checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
-}
-appState.currentConsecutiveCorrect = 0; // Reset streak
-navigate('menu');
+    // Logika yang dijalankan jika user mengkonfirmasi
+    if (appState.quizMode === 'nonstop' && appState.userId) { 
+        saveScore(appState.userName, appState.score);
+        // checkAndUnlockRewards dipanggil di dalam saveScore
+        navigate('menu');
+    } else if (appState.quizMode === 'practice') {
+        navigate('mode_select');
+    } else {
+        navigate('menu'); // Fallback jika mode nonstop skor 0
+    }
+    appState.currentConsecutiveCorrect = 0; // Reset streak
 }
 });
-} else if (appState.quizMode === 'practice') {
-showCustomConfirm({
-title: "Akhiri Sesi Latihan?",
-message: `Anda akan kembali ke menu utama. Progres latihan tidak memengaruhi Skor Global.`,
-okText: "Ya, Akhiri Latihan",
-onConfirm: () => {
-appState.currentConsecutiveCorrect = 0; // Reset streak
-navigate('mode_select');
-}
-});
+} else if (appState.currentView === 'mode_select') {
+    // Jika di mode_select, kembali ke menu utama
+    navigate('menu');
+} else {
+    // Untuk semua view lain (leaderboard, options, about), kembali ke menu utama
+    navigate('menu');
 }
 }
 
@@ -989,7 +1144,7 @@ quizModalContent.className = 'bg-green-50 text-green-800 p-8 rounded-2xl shadow-
 playWrong();
 quizModalIcon.innerHTML = '💔';
 quizModalText.textContent = 'SALAH!';
-quizModalSubtext.textContent = `Skor akhir: ${appState.score} (${appState.quizMode === 'nonstop' ? 'Sesi berakhir.' : 'Lanjut latihan.'})`;
+quizModalSubtext.textContent = `Poin berkurang -5. Skor akhir: ${appState.score} (${appState.quizMode === 'nonstop' ? 'Sesi berakhir.' : 'Lanjut latihan.'})`; // UPDATED TEXT
 quizModalContent.className = 'bg-red-50 text-red-800 p-8 rounded-2xl shadow-2xl text-center space-y-4 w-64 transform transition-transform duration-300 border-4 border-red-300';
 }
 
@@ -1010,9 +1165,8 @@ if (type === 'reward') {
 setNewRandomQuestion();
 renderApp();
 } else if (!isCorrect && appState.quizMode === 'nonstop') {
-if (appState.score > 0 && appState.userName) { // Hapus pengecekan isAnonymous
-saveScore(appState.userName, appState.score);
-checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
+if (appState.userId) {
+    saveScore(appState.userName, appState.score); // Save score and update trophy/session
 }
 appState.currentConsecutiveCorrect = 0;
 navigate('menu');
@@ -1027,7 +1181,11 @@ appState.isAnswerLocked = false;
 
 function renderMenu() {
 const userNameDisplay = appState.userName ?
-`<p class="text-lg text-teal-600 font-bold mt-1">Halo, ${appState.userName}!</p>` : '';
+    `<p class="text-lg text-teal-600 font-bold mt-1 clickable-username" onclick="fetchAndShowUserProfile(appState.userId, appState.userName)">Halo, ${appState.userName}!</p>` : '';
+
+// Get current Trophy Level info for display
+const trophy = appState.trophyLevel;
+const progressValue = Math.min(100, Math.floor((trophy / 160) * 100)); // Capped at 100%
 
 return `
 <div class="flex flex-col space-y-6 p-2 text-center h-full">
@@ -1037,6 +1195,17 @@ return `
         <h2 class="text-3xl font-extrabold text-gray-800 tracking-wide">PILIH MODE</h2>
         ${userNameDisplay}
         <p class="text-sm text-gray-500 mt-2">Uji pengetahuan dan raih pencapaian tertinggi.</p>
+        
+        <!-- Trophy Display (NEW) -->
+        <div class="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <p class="text-xs font-medium text-gray-500">Trophy Level Anda (Max 160)</p>
+            <p class="text-2xl font-extrabold text-amber-600">${trophy}</p>
+            <div class="w-full bg-gray-300 rounded-full h-2 mt-2">
+                <div class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: ${progressValue}%"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">${appState.totalNonstopSessions} Sesi Selesai</p>
+        </div>
+        
     </div>
 
     <!-- Main Navigation Cards (Full Width Stack) -->
@@ -1050,7 +1219,7 @@ return `
                 </svg>
                 <div>
                     <span class="text-xl font-extrabold block">Mulai Kuis (Nonstop)</span>
-                    <span class="text-sm opacity-90">Tantangan skor global. Salah = Tamat.</span>
+                    <span class="text-sm opacity-90">Tantangan skor global. Salah = -5 poin & Tamat.</span>
                 </div>
             </div>
             <span class="text-xs bg-white text-teal-600 px-3 py-1 rounded-full font-bold shadow-md">SKOR</span>
@@ -1140,7 +1309,8 @@ function renderRewards() {
 // ... (sama seperti sebelumnya)
 const achievementGroups = ACHIEVEMENTS.reduce((acc, ach) => {
 const isUnlocked = appState.unlockedRewards.includes(ach.id);
-const progress = ach.category === 'HARDWORKER' ? appState.highestScoreEver : appState.maxConsecutiveCorrect;
+const progress = ach.category === 'HARDWORKER' ? appState.highestScoreEver : 
+                 (ach.category === 'HEADMACHINE' ? appState.maxConsecutiveCorrect : appState.trophyLevel); // Check Trophy Level
 const progressDisplay = `${Math.min(progress, ach.value)}/${ach.value} ${ach.unit}`;
 
 if (!acc[ach.category]) {
@@ -1159,18 +1329,30 @@ return acc;
 let html = `
 <div class="flex flex-col space-y-6">
 <h2 class="text-2xl font-bold text-gray-800 border-b-4 border-pink-500 pb-2 text-center tracking-wide">🎁 Achievement Anda (${appState.unlockedRewards.length} dari ${ACHIEVEMENTS.length})</h2>
-<p class="text-sm text-gray-500 text-center">Skor Tertinggi: <strong class="text-teal-600">${appState.highestScoreEver}</strong> Poin | Beruntun Terlama: <strong class="text-teal-600">${appState.maxConsecutiveCorrect}</strong> Soal</p>
+<p class="text-sm text-gray-500 text-center">
+    Skor Tertinggi: <strong class="text-teal-600">${appState.highestScoreEver}</strong> Poin | 
+    Beruntun Terlama: <strong class="text-teal-600">${appState.maxConsecutiveCorrect}</strong> Soal |
+    Trophy Level: <strong class="text-amber-600">${appState.trophyLevel}</strong>
+</p>
 `;
 
+// Define a map for colors based on category
+const categoryColors = {
+    'HARDWORKER': { title: 'HARDWORKER (Skor)', color: 'bg-green-500', text: 'text-green-800', border: 'border-green-400' },
+    'HEADMACHINE': { title: 'HEADMACHINE (Beruntun)', color: 'bg-red-500', text: 'text-red-800', border: 'border-red-400' },
+    'TROPHY': { title: 'TROPHY (Level Progress)', color: 'bg-pink-500', text: 'text-pink-800', border: 'border-pink-400' }
+};
+
 for (const category in achievementGroups) {
+const { title, color, text, border } = categoryColors[category];
 html += `
 <div class="pt-4">
-<h3 class="text-xl font-extrabold text-pink-700 mb-3 border-b border-pink-200">${category === 'HEADMACHINE' ? 'HEADMACHINE (Beruntun)' : 'HARDWORKER (Skor)'}</h3>
+<h3 class="text-xl font-extrabold ${categoryColors[category].text.replace('-800', '-700')} mb-3 border-b border-${category.toLowerCase()}-200">${title}</h3>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 `;
 achievementGroups[category].forEach(ach => {
-const statusClass = ach.isUnlocked ? 'bg-green-50 border-green-400' : 'bg-gray-100 border-gray-300 opacity-80';
-const titleClass = ach.isUnlocked ? 'text-green-800' : 'text-gray-600';
+const statusClass = ach.isUnlocked ? `bg-${category.toLowerCase()}-50 ${border}` : 'bg-gray-100 border-gray-300 opacity-80';
+const titleClass = ach.isUnlocked ? `${text}` : 'text-gray-600';
 const icon = ach.isUnlocked ? ach.icon : '🔒';
 
 html += `
@@ -1185,7 +1367,7 @@ html += `
 <div class="mt-2 text-xs">
 <p class="text-gray-700 font-medium">${ach.isUnlocked ? 'Telah Dibuka' : 'Progress: ' + ach.progressDisplay}</p>
 <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
-<div class="${ach.isUnlocked ? 'bg-green-500' : 'bg-pink-500'} h-1.5 rounded-full" style="width: ${Math.min(100, ach.progressPercentage)}%"></div>
+<div class="${ach.isUnlocked ? color : 'bg-pink-500'} h-1.5 rounded-full" style="width: ${Math.min(100, ach.progressPercentage)}%"></div>
 </div>
 </div>
 </div>
@@ -1304,7 +1486,12 @@ async function saveUsernameAndStart() {
         
         // Simpan juga ke profile achievements (memastikan nama terdaftar)
         const achRef = getAchievementsRef();
-        await setDoc(achRef, { name: name, userId: user.uid }, { merge: true });
+        await setDoc(achRef, { 
+            name: name, 
+            userId: user.uid,
+            trophyLevel: appState.trophyLevel,
+            totalNonstopSessions: appState.totalNonstopSessions
+        }, { merge: true });
         
         console.log("✅ Profile and Achievement data saved successfully to Firestore.");
         
@@ -1388,7 +1575,7 @@ return `
 <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100 space-y-3">
 <h3 class="text-lg font-bold text-teal-700">Mode Nonstop Tantangan</h3>
 <p class="text-gray-700 font-medium">
-Jawablah soal sebanyak mungkin dengan benar untuk mengumpulkan skor. Satu jawaban salah akan mengakhiri sesi kuis Anda dan skor akan dicatat ke Leaderboard serta Achievement.
+Jawablah soal sebanyak mungkin dengan benar untuk mengumpulkan skor. Satu jawaban salah akan mengakhiri sesi kuis Anda. Jawaban salah mengurangi **-5 poin** dan skor akan dicatat ke Leaderboard serta Achievement.
 </p>
 <h3 class="text-lg font-bold text-blue-700 mt-4">Mode Latihan Klasik</h3>
 <p class="text-gray-700 font-medium">
@@ -1449,11 +1636,14 @@ rankClass = 'text-gray-500 font-medium text-lg';
 
 const isCurrentUser = appState.userId === entry.userId;
 const userHighlightClass = isCurrentUser ? 'ring-2 ring-teal-500 bg-teal-50 border-teal-400' : 'border-gray-200';
+// Added onClick to username
+const usernameDisplay = `<span class="flex-grow font-semibold text-gray-800 truncate px-2 clickable-username" onclick="fetchAndShowUserProfile('${entry.userId}', '${entry.name}')">${entry.name} ${isCurrentUser ? '<span class="text-teal-600 font-bold text-sm">(Anda)</span>' : ''}</span>`;
+
 
 listHtml += `
 <div class="flex justify-between items-center p-3 rounded-xl shadow-md border ${userHighlightClass}">
 <span class="${rankClass} w-10 text-center">${rankVisual}</span>
-<span class="flex-grow font-semibold text-gray-800 truncate px-2">${entry.name} ${isCurrentUser ? '<span class="text-teal-600 font-bold text-sm">(Anda)</span>' : ''}</span>
+${usernameDisplay}
 <span class="font-extrabold text-2xl text-teal-600">${entry.score}</span>
 </div>
 `;
@@ -1474,7 +1664,7 @@ let html = `
 <div class="flex flex-col space-y-6">
 <div class="text-center p-3 bg-white rounded-xl shadow-md">
 <p class="text-sm ${appState.quizMode === 'nonstop' ? 'text-teal-600' : 'text-blue-600'} font-bold mb-1">
-${appState.quizMode === 'nonstop' ? `PERTANYAAN KE: ${appState.score/10 + 1}` : `LATIHAN: ${appState.practiceTopic}`}
+${appState.quizMode === 'nonstop' ? `PERTANYAAN KE: ${Math.floor(appState.score/10) + 1}` : `LATIHAN: ${appState.practiceTopic}`}
 </p>
 <div class="w-full bg-gray-200 rounded-full h-2.5">
 <div class="${appState.quizMode === 'nonstop' ? 'bg-teal-600' : 'bg-blue-600'} h-2.5 rounded-full transition-all duration-500" style="width: 100%;"></div>
@@ -1514,6 +1704,7 @@ viewContent.innerHTML = html;
 function checkAnswer(element, selectedAnswer) {
 if (appState.isAnswerLocked) return;
 appState.isAnswerLocked = true;
+playClick(); // Play click sound when option is chosen
 
 const currentQ = appState.currentQuestion;
 const correctAnswer = currentQ.correctAnswer;
@@ -1543,6 +1734,10 @@ element.classList.add('bg-green-100', 'border-green-500', 'ring-4', 'ring-green-
 } else {
 if (appState.quizMode === 'nonstop') {
 appState.currentConsecutiveCorrect = 0; // Reset streak pada kesalahan
+scoreChange = -5; // NEW: Subtract 5 points
+appState.score += scoreChange;
+if (appState.score < 0) appState.score = 0; // Prevent negative score
+currentScoreSpan.textContent = appState.score;
 }
 
 element.classList.remove('bg-white', 'border-gray-300');
@@ -1556,8 +1751,9 @@ correctButton.classList.add('bg-teal-200', 'border-teal-600', 'ring-4', 'ring-te
 
 // Periksa reward di sini sebelum melanjutkan
 if (appState.quizMode === 'nonstop') {
-// Karena semua user harus login Google, tidak perlu cek isAnonymous
-checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
+// checkAndUnlockRewards dipanggil saat sesi selesai di saveScore, BUKAN di setiap jawaban.
+// Kecuali untuk notifikasi reward, kita panggil di sini, tapi data score/consecutive yang digunakan adalah data live.
+// checkAndUnlockRewards(appState.score, appState.currentConsecutiveCorrect);
 }
 
 showFeedbackAndContinue(isCorrect, scoreChange);
@@ -1590,6 +1786,7 @@ window.showAlert = showAlert; // Tambahkan ke global scope
 window.handleSignOut = handleSignOut;
 window.toggleMusic = toggleMusic; // Tambahkan ke global scope
 window.toggleSfx = toggleSfx; // Tambahkan ke global scope
+// window.fetchAndShowUserProfile = fetchAndShowUserProfile; // Sudah didefinisikan di global scope
 </script>
 </body>
 </html>
